@@ -1,2 +1,14 @@
 @import "../public/style/reset.scss";
 @import "../public/style/variable.scss";
+
+#homePage {
+  display: flex;
+  flex-direction: column;
+}
+
+.content__categorie_post {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}

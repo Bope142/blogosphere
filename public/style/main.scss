@@ -13,7 +13,7 @@ body {
   position: relative;
   height: 100vh;
   overflow: hidden;
-  font-family: $fontManropeMedium;
+  font-family: $fontManropeLight;
   background: $colorPrimaryBase;
 }
 
@@ -24,7 +24,7 @@ body {
 }
 
 .page__content {
-  padding-top: 250px;
+  padding-top: 180px;
 }
 
 .simple_link {
@@ -36,4 +36,9 @@ body {
   &:hover {
     text-decoration: underline;
   }
+}
+
+.section_page {
+  padding-left: $paddingSection;
+  padding-right: $paddingSection;
 }
