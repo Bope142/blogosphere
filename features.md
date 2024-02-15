@@ -30,7 +30,7 @@
 - Recherche d'articles.
 - Pagination pour les listes d'articles.
 
-## Gestion des Médias :
+## Gestion des Médias :cl
 
 - Stockage et gestion des images et autres médias associés aux articles et aux profils utilisateur.
 - Optimisation des médias pour les performances du site.

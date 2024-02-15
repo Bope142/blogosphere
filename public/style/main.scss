@@ -1,0 +1,24 @@
+@import "./variable.scss";
+@import "./reset.scss";
+html {
+  scroll-behavior: smooth;
+  user-select: none;
+}
+
+* {
+  scroll-behavior: smooth !important;
+}
+
+body {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  font-family: $fontManropeMedium;
+  background: $colorPrimaryBase;
+}
+
+.page__container {
+  background: $colorPrimary100;
+  height: 100vh;
+  overflow-x: hidden;
+}
