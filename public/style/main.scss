@@ -22,3 +22,18 @@ body {
   height: 100vh;
   overflow-x: hidden;
 }
+
+.page__content {
+  padding-top: 250px;
+}
+
+.simple_link {
+  font-family: $fontManropeMedium;
+  text-decoration: none;
+  color: black;
+  font-size: 1rem;
+  transition: all 0.5s linear;
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,51 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.btn {
+  border: none;
+  outline: none;
+  font-family: $fontManropeMedium;
+  text-decoration: none;
+  padding: 15px 30px;
+  border-radius: $raduis;
+  position: relative;
+}
+
+.btn-link {
+  background: $colorPrimaryBase;
+  color: white;
+  transition: all 0.5s linear;
+  & * {
+    transition: all 0.5s linear;
+  }
+}
+
+.btn-clic-effect:hover {
+  transition-duration: 0.1s;
+  opacity: 0.8;
+}
+
+.btn-clic-effect:after {
+  content: "";
+  display: block;
+  position: absolute;
+  border-radius: $raduis;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: all 0.5s linear;
+  box-shadow: 0 0 5px 10px #ff313185;
+}
+
+.btn-clic-effect:active:after {
+  box-shadow: 0 0 0 0 #ff313185;
+  position: absolute;
+  border-radius: 4em;
+  left: 0;
+  top: 0;
+  background: rgba(255, 255, 255, 0.13);
+  opacity: 1;
+  transition: 0s;
+}

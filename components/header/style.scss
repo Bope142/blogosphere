@@ -1,0 +1,83 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  padding-top: 25px;
+  width: 100%;
+  & .content {
+    margin-left: $paddingSection;
+    margin-right: $paddingSection;
+    background: white;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: $raduis;
+    padding: 10px $paddingSection;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+}
+
+.header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 5px;
+  flex: none;
+  & svg {
+    height: 4rem;
+    width: 4rem;
+    flex: none;
+  }
+  & h1 {
+    font-family: $fontManropeExtraBold;
+    font-size: 1.5rem;
+  }
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 20px;
+  & .nav__item {
+    font-family: $fontManropeBold;
+    font-size: 1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #000000;
+    position: relative;
+    transition: all 0.5s linear;
+    &:hover {
+      opacity: 0.7;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: $colorPrimaryBase;
+      bottom: -20%;
+      transition: all 0.5s linear;
+    }
+  }
+  & .active-item-nav {
+    color: $colorPrimaryBase;
+    &::after {
+      width: 80%;
+    }
+  }
+}
+
+.header__profil_user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 15px;
+}
