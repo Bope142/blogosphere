@@ -8,5 +8,12 @@ function ButtonSimpleLink({ path, text }) {
     </Link>
   );
 }
+const ButtonIcoLink = ({ path, Icons }) => {
+  return (
+    <Link href={path} className="btn btn-link-icons btn-clic-effect-link">
+      {Icons}
+    </Link>
+  );
+};
 
-export { ButtonSimpleLink };
+export { ButtonSimpleLink, ButtonIcoLink };

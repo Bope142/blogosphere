@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "../public/style/main.scss";
 import Head from "next/head";
 import Header from "@/components/header/Header";
+import Footer from "@/components/footer/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
         <main className="page__container">
           <Header />
           {children}
+          <Footer />
         </main>
       </body>
     </html>

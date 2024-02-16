@@ -59,4 +59,86 @@ const CardPostSimple = ({
   );
 };
 
-export { CardCategory, CardPostSimple };
+const CardCirclePost = ({ title, cover, postLink, datePost }) => {
+  return (
+    <Link href={postLink} className="card card__circle">
+      <div className="cover">
+        <Image
+          src={cover}
+          alt={`image couverture du post ${title}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <div className="details">
+        <p className="title">{title}</p>
+        <p className="date">{datePost}</p>
+      </div>
+    </Link>
+  );
+};
+const CardPostPrincipal = ({ title, cover, postLink }) => {
+  return (
+    <div className="card card__post__principal">
+      <div className="cover">
+        <Image
+          src={cover}
+          alt={`image couverture du post ${title}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <div className="details">
+        <Link className="title" href={postLink}>
+          {title}
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const CardPostLarge = ({ title, cover, postLink }) => {
+  return (
+    <div className="card card__post__large">
+      <div className="cover">
+        <Image
+          src={cover}
+          alt={`image couverture du post ${title}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <Link className="title" href={postLink}>
+        {title}
+      </Link>
+    </div>
+  );
+};
+const CardPostDefault = ({ title, cover, postLink, category }) => {
+  return (
+    <div className="card card__post__default">
+      <div className="cover">
+        <Image
+          src={cover}
+          alt={`image couverture du post ${title}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <div className="details">
+        <div className="cat">{category}</div>
+        <Link className="title" href={postLink}>
+          {title}
+        </Link>
+      </div>
+    </div>
+  );
+};
+export {
+  CardCategory,
+  CardPostSimple,
+  CardCirclePost,
+  CardPostPrincipal,
+  CardPostLarge,
+  CardPostDefault,
+};

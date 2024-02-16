@@ -22,6 +22,16 @@
     border-radius: $raduis;
     padding: 10px $paddingSection;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    position: relative;
+    z-index: 50;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    height: 120px;
+    width: 99.1%;
+    background: $colorPrimary100;
+    top: 0;
   }
 }
 
