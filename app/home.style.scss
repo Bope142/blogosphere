@@ -10,5 +10,26 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: center;
+  //   justify-content: space-between;
+  //   align-items: flex-start;
+}
+
+#recents__post {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  row-gap: 55px;
+  & .title__section {
+    padding: 0 $paddingSection;
+  }
+  & .post__best {
+    display: flex;
+    overflow-x: scroll;
+    column-gap: 25px;
+    padding: 10px;
+  }
+}
+
+.post__best::-webkit-scrollbar {
+  display: none;
 }

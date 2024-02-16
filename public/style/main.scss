@@ -24,7 +24,7 @@ body {
 }
 
 .page__content {
-  padding-top: 180px;
+  padding-top: 100px;
 }
 
 .simple_link {
@@ -39,6 +39,5 @@ body {
 }
 
 .section_page {
-  padding-left: $paddingSection;
-  padding-right: $paddingSection;
+  padding: 100px $paddingSection;
 }

@@ -29,5 +29,34 @@ function CardCategory({ title, cover }) {
     </div>
   );
 }
+const CardPostSimple = ({
+  category,
+  title,
+  cover,
+  duration,
+  postLink,
+  datePost,
+}) => {
+  return (
+    <Link className="card card__post_simple" href={postLink}>
+      <div className="cover">
+        <Image
+          src={cover}
+          alt={`image couverture du post ${title}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <div className="details">
+        <div className="details-lecture">
+          <div className="cat">{category}</div>
+          <p className="duration">{duration}</p>
+        </div>
+        <p className="title__post">{title}</p>
+        <p className="post__date">{datePost}</p>
+      </div>
+    </Link>
+  );
+};
 
-export { CardCategory };
+export { CardCategory, CardPostSimple };
