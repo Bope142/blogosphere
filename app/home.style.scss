@@ -7,7 +7,8 @@
 }
 
 .content__categorie_post {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   flex-wrap: wrap;
   gap: 10px;
   //   justify-content: space-between;
@@ -32,4 +33,37 @@
 
 .post__best::-webkit-scrollbar {
   display: none;
+}
+
+.categories__post {
+  display: flex;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  background: black;
+  padding: 10px $paddingSection;
+  column-gap: 5px;
+  white-space: nowrap;
+  margin-top: 25px;
+  & span {
+    color: white;
+    flex: none;
+  }
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 40s linear infinite;
+
+  &:hover {
+    animation-duration: 0 !important;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
