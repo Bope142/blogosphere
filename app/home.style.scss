@@ -11,8 +11,6 @@
   grid-template-columns: repeat(6, 1fr);
   flex-wrap: wrap;
   gap: 10px;
-  //   justify-content: space-between;
-  //   align-items: flex-start;
 }
 
 #recents__post {
@@ -112,5 +110,29 @@
     gap: 25px;
     //justify-content: center;
     // align-items: center;
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  .content__categorie_post {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .content__categorie_post {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .content__categorie_post {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  .content__categorie_post {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
