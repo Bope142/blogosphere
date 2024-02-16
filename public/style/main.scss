@@ -21,6 +21,8 @@ body {
   background: $colorPrimary100;
   height: 100vh;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .page__content {

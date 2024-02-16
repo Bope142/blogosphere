@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import "./style.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -60,13 +60,37 @@ const HeaderLogo = () => {
     </div>
   );
 };
+
+const ButtonMenuMobile = () => {
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <button
+      className={`btn btn-menu btn-clic-effect ${isActive && "active"}`}
+      onClick={() => {
+        setIsActive(!isActive);
+        document
+          .querySelector(".nav__mobile")
+          .classList.toggle("nav__mobile_show");
+      }}
+    >
+      <span className="line"></span>
+      <span className="line"></span>
+      <span className="line"></span>
+    </button>
+  );
+};
+
 function Header() {
   return (
     <header className="container__header">
       <div className="content">
-        <HeaderLogo />
-        <HeaderNav />
-        <HeaderProfilStatut />
+        <div className="nav__large_screen">
+          <HeaderLogo />
+          <HeaderNav />
+          <HeaderProfilStatut />
+          <ButtonMenuMobile />
+        </div>
       </div>
     </header>
   );

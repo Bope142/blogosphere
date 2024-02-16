@@ -3,6 +3,7 @@ import "../public/style/main.scss";
 import Head from "next/head";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
+import NavMobile from "@/components/navMobile/NavMobile";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <main className="page__container">
           <Header />
+          <NavMobile />
           {children}
           <Footer />
         </main>
