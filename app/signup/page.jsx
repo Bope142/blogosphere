@@ -5,14 +5,20 @@ import TitleSection from "@/components/titleSection/TitleSection";
 import { ButtonSubmitForm } from "@/components/buttons/Buttons";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-const FormLogin = () => {
+const FormSignup = () => {
   return (
     <div className="form__container">
       <div className="btn__connect_with__google">
         <FcGoogle /> <p>Continuez avec Google</p>
       </div>
-      <span className="or">OU connectez-vous avec Email</span>
+      <span className="or">OU Inscrivez-vous avec Email</span>
       <form id="form__login" action="">
+        <InputForm
+          type={"text"}
+          placeholder={"Entrez votre nom ici"}
+          labelText={"Nom Profil *"}
+          name={"email"}
+        />
         <InputForm
           type={"email"}
           placeholder={"Entrez adresse email ici"}
@@ -25,34 +31,37 @@ const FormLogin = () => {
           labelText={"Mot de Passe *"}
           name={"password"}
         />
-        <Link href={""} className="forget-pswd">
-          Mot de passe Oublié ?
-        </Link>
-        <ButtonSubmitForm text={"Connexion "} />
+        <InputForm
+          type={"password"}
+          placeholder={"Entrez mot de passe ici"}
+          labelText={"Confirme Le Mot de Passe *"}
+          name={"password"}
+        />
+        <ButtonSubmitForm text={"S’inscrire"} />
       </form>
       <p className="others">
-        Vous n’avez pas des comptes ?{" "}
-        <Link href={"/signup"} className="forget-pswd">
-          Créer un compte
+        Vous avez déjà un comptes ?{" "}
+        <Link href={"/login"} className="forget-pswd">
+          Connectez vous
         </Link>
       </p>
     </div>
   );
 };
 
-function LoginPage() {
+function SignupPage() {
   return (
     <main className="page__content">
       <section className="section_page contact__container">
         <TitleSection
-          title={"connexion"}
+          title={"INSCRIPTION "}
           colorClass={"black"}
           overview={"HI👋 BON RETOUR"}
         />
-        <FormLogin />
+        <FormSignup />
       </section>
     </main>
   );
 }
 
-export default LoginPage;
+export default SignupPage;
