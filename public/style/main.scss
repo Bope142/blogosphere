@@ -84,3 +84,33 @@ img {
   text-align: center;
   justify-content: center;
 }
+
+input,
+textarea,
+select {
+  padding: 15px;
+  outline: none;
+  border-radius: 0.5rem;
+  font-family: $fontManropeLight;
+  font-size: 0.8rem;
+  border: 1px solid rgba($colorPrimaryBase, 0.1);
+  transition: all 0.3s linear;
+  background: white;
+  &:focus {
+    box-shadow: 0 0 2px 5px rgba($colorPrimaryBase, 0.08);
+  }
+}
+option {
+  padding: 15px;
+  outline: none;
+  font-family: $fontManropeLight;
+  font-size: 0.8rem;
+  background: $colorPrimaryBase;
+  color: white;
+  & * {
+    background: white !important;
+  }
+  &::selection {
+    background: white;
+  }
+}

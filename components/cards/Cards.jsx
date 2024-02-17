@@ -10,6 +10,8 @@ import { FaSquareFacebook } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { AiOutlineLinkedin } from "react-icons/ai";
 import { FaGithub } from "react-icons/fa";
+import { AiFillLike } from "react-icons/ai";
+import { FaCommentAlt } from "react-icons/fa";
 function CardCategory({ title, cover }) {
   return (
     <div className="card card__categories">
@@ -194,6 +196,87 @@ const CardAuthor = ({ nameAuthor, overview, profilCover, articleCount }) => {
     </div>
   );
 };
+
+const CardPostDetails = ({
+  postCover,
+  postTitle,
+  postCategory,
+  profilAuthor,
+  nameAuthor,
+  like,
+  comment,
+  postText,
+  postDuration,
+}) => {
+  return (
+    <div className="post__card">
+      <div className="details__post">
+        <div className="post__category">
+          <p> {postCategory}</p>
+        </div>
+        <div className="post__duration">
+          <p> {postDuration} Min</p>
+        </div>
+      </div>
+      <div className="cover">
+        <Image
+          src={postCover}
+          alt={`image couverture de l'article ${postTitle}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <p className="post__title">{postTitle}</p>
+      <div className="author__post">
+        <div className="profil__author">
+          <Image
+            src={profilAuthor}
+            alt={`image couverture de l'article ${postTitle}`}
+            width={100}
+            height={100}
+          />
+        </div>
+        <div className="authors_name">
+          <p>Par</p>
+          <p className="name__auth">{nameAuthor}</p>
+        </div>
+        <div className="actions__posts">
+          <button className="btn like__post">
+            {like} <AiFillLike />
+          </button>
+          <button className="btn comment__post">
+            {comment} <FaCommentAlt />
+          </button>
+        </div>
+      </div>
+      <div className="content__post__text">{postText}</div>
+    </div>
+  );
+};
+
+const CardComment = ({ username, date, comments, profilUser }) => {
+  return (
+    <div className="container__comments">
+      <div className="users__comments">
+        <div className="profil">
+          <Image
+            src={profilUser}
+            alt={`image couverture de l'article ${username}`}
+            width={100}
+            height={100}
+          />
+        </div>
+        <div className="details">
+          <Link href={""} className="name__user">
+            {username}
+          </Link>
+          <p className="date__comment">{date}</p>
+        </div>
+      </div>
+      <p className="comments">{comments}</p>
+    </div>
+  );
+};
 export {
   CardCategory,
   CardPostSimple,
@@ -203,4 +286,6 @@ export {
   CardPostDefault,
   CardProfilAuthor,
   CardAuthor,
+  CardPostDetails,
+  CardComment,
 };

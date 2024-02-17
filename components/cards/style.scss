@@ -510,3 +510,145 @@
     }
   }
 }
+
+.post__card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  overflow: hidden;
+  background: white;
+  padding: 15px;
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  & .details__post {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    & .post__category,
+    .post__duration {
+      font-family: $fontManropeLight;
+      font-size: 0.8rem;
+      text-decoration: none;
+      color: rgb(255, 255, 255);
+      transition: all 0.5s linear;
+      padding: 10px;
+      background: black;
+      border-radius: 0.8rem;
+      align-self: flex-start;
+    }
+  }
+  & .cover {
+    display: flex;
+    overflow: hidden;
+    border-radius: 0.5rem;
+  }
+  & .post__title {
+    font-family: $fontManropeLight;
+    font-size: 1.5rem;
+    line-height: 2.2rem;
+    text-align: left;
+  }
+
+  & .author__post {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    & .profil__author {
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      height: 70px;
+      width: 70px;
+      border: 5px solid white;
+      box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+    & .authors_name {
+      display: flex;
+      flex-direction: column;
+      row-gap: 10px;
+      & p {
+        font-family: $fontManropeLight;
+        font-size: 1rem;
+      }
+      & .name__auth {
+        font-family: $fontManropeMedium;
+      }
+    }
+    & .actions__posts {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      & .btn {
+        font-family: $fontManropeLight;
+        font-size: 0.8rem;
+        text-decoration: none;
+        color: rgb(255, 255, 255);
+        transition: all 0.5s linear;
+        padding: 10px;
+        background: $colorPrimaryBase;
+        border-radius: 0.8rem;
+        align-self: flex-start;
+        display: flex;
+        column-gap: 10px;
+      }
+    }
+  }
+
+  .content__post__text {
+    font-family: $fontManropeLight;
+    font-size: 1.2rem;
+    line-height: 1.7rem;
+    & * {
+      font-family: $fontManropeLight;
+    }
+  }
+}
+
+.container__comments {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+  overflow: hidden;
+  background: white;
+  padding: 15px;
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  width: 100%;
+  & .users__comments {
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+    & .profil {
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      height: 50px;
+      width: 50px;
+      border: 5px solid white;
+      box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    }
+    & .details {
+      display: flex;
+      flex-direction: column;
+      row-gap: 10px;
+      & .name__user {
+        color: black;
+        text-decoration: none;
+        font-family: $fontManropeExtraBold;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+      & .date__comment {
+        font-family: $fontManropeLight;
+        font-size: 0.7rem;
+      }
+    }
+  }
+  & .comments {
+    font-family: $fontManropeLight;
+    font-size: 0.9rem;
+  }
+}
