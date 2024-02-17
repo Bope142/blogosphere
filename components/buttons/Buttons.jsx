@@ -15,5 +15,12 @@ const ButtonIcoLink = ({ path, Icons }) => {
     </Link>
   );
 };
+const ButtonSubmitForm = ({ text }) => {
+  return (
+    <button type="submit" className="btn btn-link btn-clic-effect">
+      {text}
+    </button>
+  );
+};
 
-export { ButtonSimpleLink, ButtonIcoLink };
+export { ButtonSimpleLink, ButtonIcoLink, ButtonSubmitForm };
