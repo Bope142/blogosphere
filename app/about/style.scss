@@ -1,2 +1,143 @@
 @import "../../public/style/reset.scss";
 @import "../../public/style/variable.scss";
+
+.page__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0px;
+  align-items: center;
+  & p {
+    font-family: $fontManropeLight;
+    font-size: 3rem;
+    line-height: 3.8rem;
+    text-transform: uppercase;
+  }
+}
+
+.cover__banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & img {
+    object-fit: contain;
+    height: 70%;
+    width: 70%;
+  }
+}
+
+.box__second {
+  transform: translateX(20%);
+}
+
+.box__one {
+  transform: translateX(50%) translateY(-25%);
+}
+
+.categories__post {
+  display: flex;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  background: black;
+  padding: 20px $paddingSection;
+  column-gap: 5px;
+  white-space: nowrap;
+  margin-top: 35px;
+  & span {
+    color: white;
+    flex: none;
+    font-size: 1.5rem;
+    font-family: $fontManropeRegular;
+  }
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 40s linear infinite;
+
+  &:hover {
+    animation-duration: 0 !important;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.list__author {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  & .content__profil_author {
+    display: grid;
+    grid-template-columns: repeat(3, 11fr);
+    gap: 25px;
+  }
+  & .btn {
+    align-self: center;
+  }
+}
+
+@media only screen and (max-width: 3000px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(4, 11fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 1320px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(3, 11fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .banner {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    & p {
+      font-size: 2rem;
+      line-height: 2.8rem;
+      order: 5;
+    }
+  }
+
+  .cover__banner {
+    order: 1;
+    & img {
+      object-fit: cover;
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+@media only screen and (max-width: 1130px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+}

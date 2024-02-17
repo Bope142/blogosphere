@@ -134,6 +134,32 @@ const CardPostDefault = ({ title, cover, postLink, category }) => {
     </div>
   );
 };
+const CardProfilAuthor = ({
+  nameAuthor,
+  profilLink,
+  overview,
+  profilCover,
+}) => {
+  return (
+    <div className="card__auhtor__profil">
+      <div className="card__header">
+        <div className="profil">
+          <Image
+            src={profilCover}
+            alt={`image couverture de l'auteur ${nameAuthor}`}
+            width={100}
+            height={100}
+          />
+        </div>
+        <Link className="btn btn__profil_user" href={profilLink}>
+          Profile
+        </Link>
+      </div>
+      <p className="name__author">{nameAuthor}</p>
+      <p className="overview">{overview}</p>
+    </div>
+  );
+};
 export {
   CardCategory,
   CardPostSimple,
@@ -141,4 +167,5 @@ export {
   CardPostPrincipal,
   CardPostLarge,
   CardPostDefault,
+  CardProfilAuthor,
 };

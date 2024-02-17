@@ -6,13 +6,13 @@
   align-items: center;
   gap: 10px;
   & .title {
-    font-family: $fontManropeMedium;
+    font-family: $fontManropeLight;
     font-size: 2.9rem;
     line-height: 3rem;
     text-transform: uppercase;
   }
   & .overview {
-    font-family: $fontManropeRegular;
+    font-family: $fontManropeLight;
     font-size: 1rem;
     line-height: 1.5rem;
   }
