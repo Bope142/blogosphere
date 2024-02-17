@@ -1,0 +1,50 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.contact__container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+}
+
+.form__container {
+  background: white;
+  display: flex;
+  border-radius: 0.8rem;
+  padding: 35px 15px;
+  flex-direction: column;
+  row-gap: 28px;
+  //   width: auto;
+  max-width: 500px;
+
+  //   align-self: center;
+}
+
+#form__login {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  padding: 5px;
+  overflow: hidden;
+
+  & .forget-pswd {
+    align-self: flex-end;
+    font-family: $fontManropeBold;
+    color: $colorPrimaryBase;
+    transform: translateY(-98%);
+    text-decoration: none;
+  }
+  & .btn {
+    align-self: center;
+  }
+}
+
+.others {
+  text-align: center;
+  font-family: $fontManropeLight;
+  font-size: 0.9rem;
+  line-height: 1.2rem;
+  & a {
+    color: $colorPrimaryBase;
+  }
+}

@@ -1,0 +1,67 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.footer {
+  margin-top: auto;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  padding-bottom: 85px !important;
+}
+
+.copyMention {
+  display: flex;
+  padding: 20px;
+  background: white;
+  border-radius: 0.8rem;
+  font-family: $fontManropeLight;
+  gap: 5px;
+  align-items: center;
+  color: black;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+
+  & a {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+.content__footer {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.box__footer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  background: white;
+  padding: 25px;
+  border-radius: 0.8rem;
+  & span {
+    font-family: $fontManropeSemiBold;
+    font-size: 1rem;
+  }
+  & .content__infos {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    & .list__item {
+      display: flex;
+      align-items: center;
+      column-gap: 10px;
+      p {
+        font-family: $fontManropeExtraLight;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  & .link__media {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+}
