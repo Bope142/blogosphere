@@ -1,0 +1,48 @@
+@import "../../../public/style/reset.scss";
+@import "../../../public/style/variable.scss";
+
+.about__page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 55px;
+}
+
+.content__post {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+}
+
+.list__post {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 25px;
+  & .card {
+    width: auto !important;
+    flex: none !important;
+  }
+}
+
+@media only screen and (max-width: 1700px) {
+  .list__post {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  .list__post {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .list__post {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .list__post {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

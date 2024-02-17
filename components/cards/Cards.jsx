@@ -3,6 +3,13 @@ import "./style.scss";
 import Image from "next/image";
 import Link from "next/link";
 import { GoArrowUpRight } from "react-icons/go";
+import { AiOutlineYoutube } from "react-icons/ai";
+import { ButtonIcoLink } from "../buttons/Buttons";
+import { FiPhone } from "react-icons/fi";
+import { FaSquareFacebook } from "react-icons/fa6";
+import { FaInstagram } from "react-icons/fa";
+import { AiOutlineLinkedin } from "react-icons/ai";
+import { FaGithub } from "react-icons/fa";
 function CardCategory({ title, cover }) {
   return (
     <div className="card card__categories">
@@ -160,6 +167,33 @@ const CardProfilAuthor = ({
     </div>
   );
 };
+
+const CardAuthor = ({ nameAuthor, overview, profilCover, articleCount }) => {
+  return (
+    <div className="container__card__profil__author">
+      <div className="profil__cover">
+        <Image
+          src={profilCover}
+          alt={`image couverture de l'auteur ${nameAuthor}`}
+          width={100}
+          height={100}
+        />
+      </div>
+      <div className="author__details">
+        <p className="name__author">{nameAuthor}</p>
+        <p className="overview">{overview}</p>
+        <div className="articles__count cat">{articleCount} Articles</div>
+      </div>
+      <div className="social__media">
+        <ButtonIcoLink path={""} Icons={<AiOutlineYoutube />} />
+        <ButtonIcoLink path={""} Icons={<FaSquareFacebook />} />
+        <ButtonIcoLink path={""} Icons={<FaInstagram />} />
+        <ButtonIcoLink path={""} Icons={<AiOutlineLinkedin />} />
+        <ButtonIcoLink path={""} Icons={<FaGithub />} />
+      </div>
+    </div>
+  );
+};
 export {
   CardCategory,
   CardPostSimple,
@@ -168,4 +202,5 @@ export {
   CardPostLarge,
   CardPostDefault,
   CardProfilAuthor,
+  CardAuthor,
 };

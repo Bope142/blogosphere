@@ -453,3 +453,60 @@
     line-height: 1.2rem;
   }
 }
+
+.container__card__profil__author {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  & .profil__cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.8rem;
+    border: 5px solid white;
+    overflow: hidden;
+    width: 150px;
+    flex: none;
+  }
+  & .author__details {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    & .name__author {
+      font-family: $fontManropeExtraBold;
+      font-size: 1.7rem;
+      text-transform: uppercase;
+    }
+    & .overview {
+      font-family: $fontManropeLight;
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+    & .articles__count {
+      font-family: $fontManropeLight;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: rgb(255, 255, 255);
+      transition: all 0.5s linear;
+      padding: 10px;
+      background: black;
+      border-radius: 0.8rem;
+      align-self: flex-start;
+    }
+  }
+  & .social__media {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .container__card__profil__author {
+    flex-wrap: wrap;
+    & .social__media {
+      margin-left: 0;
+    }
+  }
+}
