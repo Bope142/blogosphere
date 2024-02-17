@@ -49,3 +49,38 @@ img {
   width: 100%;
   object-fit: cover;
 }
+
+.btn__connect_with__google {
+  padding: 10px 25px;
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+  border: 1px solid rgba($colorPrimaryBase, 0.5);
+  border-radius: 2rem;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s linear;
+  & svg {
+    flex: none;
+    height: 2rem;
+    width: 2rem;
+  }
+  p {
+    font-family: $fontManropeLight;
+    font-size: 0.9rem;
+    color: rgb(0, 0, 0);
+  }
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.or {
+  font-family: $fontManropeLight;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.315);
+  text-align: center;
+  text-align: center;
+  justify-content: center;
+}

@@ -11,14 +11,13 @@
   background: white;
   display: flex;
   border-radius: 0.8rem;
-  padding: 15px;
+  padding: 35px 15px;
 }
 
 #form__contact {
   display: flex;
   flex-direction: column;
   row-gap: 25px;
-  width: 100%;
   padding: 5px;
   overflow: hidden;
   & .btn {
