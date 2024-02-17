@@ -1,0 +1,47 @@
+@import "../../../public/style/reset.scss";
+@import "../../../public/style/variable.scss";
+
+.post_details__page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 50px;
+}
+
+.add__comment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background: white;
+  background: white;
+  padding: 15px;
+  border-radius: 0.5rem;
+  & .profil__user {
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    height: 50px;
+    width: 50px;
+    border: 5px solid white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+  & textarea {
+    padding: 15px;
+    outline: none;
+    border-radius: 0.5rem;
+    font-family: $fontManropeLight;
+    font-size: 0.8rem;
+    border: 1px solid rgba($colorPrimaryBase, 0.1);
+    transition: all 0.3s linear;
+    align-self: stretch;
+    width: 100%;
+    &:focus {
+      box-shadow: 0 0 2px 5px rgba($colorPrimaryBase, 0.08);
+    }
+  }
+}
+
+.container__list__comment__post {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}

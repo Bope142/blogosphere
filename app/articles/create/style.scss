@@ -1,0 +1,24 @@
+@import "../../../public/style/reset.scss";
+@import "../../../public/style/variable.scss";
+
+.content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 50px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  & .btn {
+    align-self: center;
+  }
+}
+
+.ql-editor {
+  font-family: $fontManropeLight !important;
+  font-size: 1rem;
+  background: white;
+  min-height: 200px;
+}

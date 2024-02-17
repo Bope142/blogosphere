@@ -1,0 +1,116 @@
+@import "./variable.scss";
+@import "./reset.scss";
+html {
+  scroll-behavior: smooth;
+  user-select: none;
+}
+
+* {
+  scroll-behavior: smooth !important;
+}
+
+body {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  font-family: $fontManropeLight;
+  background: $colorPrimaryBase;
+}
+
+.page__container {
+  background: $colorPrimary100;
+  height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page__content {
+  padding-top: 80px;
+}
+
+.simple_link {
+  font-family: $fontManropeMedium;
+  text-decoration: none;
+  color: black;
+  font-size: 1rem;
+  transition: all 0.5s linear;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.section_page {
+  padding: 50px $paddingSection;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.btn__connect_with__google {
+  padding: 10px 25px;
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+  border: 1px solid rgba($colorPrimaryBase, 0.5);
+  border-radius: 2rem;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s linear;
+  & svg {
+    flex: none;
+    height: 2rem;
+    width: 2rem;
+  }
+  p {
+    font-family: $fontManropeLight;
+    font-size: 0.9rem;
+    color: rgb(0, 0, 0);
+  }
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.or {
+  font-family: $fontManropeLight;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.315);
+  text-align: center;
+  text-align: center;
+  justify-content: center;
+}
+
+input,
+textarea,
+select {
+  padding: 15px;
+  outline: none;
+  border-radius: 0.5rem;
+  font-family: $fontManropeLight;
+  font-size: 0.8rem;
+  border: 1px solid rgba($colorPrimaryBase, 0.1);
+  transition: all 0.3s linear;
+  background: white;
+  &:focus {
+    box-shadow: 0 0 2px 5px rgba($colorPrimaryBase, 0.08);
+  }
+}
+option {
+  padding: 15px;
+  outline: none;
+  font-family: $fontManropeLight;
+  font-size: 0.8rem;
+  background: $colorPrimaryBase;
+  color: white;
+  & * {
+    background: white !important;
+  }
+  &::selection {
+    background: white;
+  }
+}

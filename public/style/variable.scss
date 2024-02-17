@@ -1,0 +1,52 @@
+/*Export fonts */
+@font-face {
+  font-family: "Manrope-ExtraBold";
+  src: url("../fonts/Manrope-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "Manrope-Bold";
+  src: url("../fonts/Manrope-Bold.ttf");
+}
+@font-face {
+  font-family: "Manrope-SemiBold";
+  src: url("../fonts/Manrope-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Manrope-Medium";
+  src: url("../fonts/Manrope-Medium.ttf");
+}
+@font-face {
+  font-family: "Manrope-Regular";
+  src: url("../fonts/Manrope-Regular.ttf");
+}
+@font-face {
+  font-family: "Manrope-Light";
+  src: url("../fonts/Manrope-Light.ttf");
+}
+@font-face {
+  font-family: "Manrope-ExtraLight";
+  src: url("../fonts/Manrope-ExtraLight.ttf");
+}
+
+/* Fonts */
+$fontManropeExtraBold: "Manrope-ExtraBold", sans-serif;
+$fontManropeBold: "Manrope-Bold", sans-serif;
+$fontManropeSemiBold: "Manrope-SemiBold", sans-serif;
+$fontManropeMedium: "Manrope-Medium", sans-serif;
+$fontManropeRegular: "Manrope-Regular", sans-serif;
+$fontManropeLight: "Manrope-Light", sans-serif;
+$fontManropeExtraLight: "Manrope-ExtraLight", sans-serif;
+
+/* color */
+
+$colorPrimaryBase: #ff3131;
+$colorPrimary100: #ffecec;
+$colorWhite: #ffffff;
+$colorGrayBase: #908383;
+$colorGray700: #252020;
+
+/* raduis border */
+$raduis: 50px;
+
+/* padding section */
+$paddingSection: 30px;
