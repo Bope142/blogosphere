@@ -1,4 +1,7 @@
+"use client";
 import React from "react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import "./style.scss";
 import {
   CardAuthor,
@@ -9,12 +12,6 @@ import { CardPostSimple } from "@/components/cards/Cards";
 import TitleSection from "@/components/titleSection/TitleSection";
 import Image from "next/image";
 
-// category: ,
-//       title: ,
-//       cover: "/images/tech_cover.png",
-//       duration: "5 min",
-//       postLink: "/article1",
-//       date: "2024-02-15",
 const post = `Before diving into the complexities, it's crucial to acquaint yourself with the building blocks of the language. Begin with greetings, basic phrases, and essential vocabulary. Platforms like Duolingo, Babbel, or Rosetta Stone offer engaging exercises that make learning these fundamentals enjoyable.
 
 Grammar might seem daunting, but fear not! Understanding basic sentence structures, verb conjugations, and noun genders lays a sturdy foundation. Online resources, textbooks, and YouTube tutorials are fantastic aids for grasping grammar intricacies.
@@ -113,15 +110,24 @@ const SectionContentComments = () => {
   );
 };
 function PostDetailPage() {
-  return (
-    <main className="page__content">
-      <section className="section_page post_details__page">
-        <SectionPost />
-        <SectionAddComment />
-        <SectionContentComments />
-      </section>
-    </main>
-  );
+  const { data: session, status } = useSession();
+
+  if (status === "authenticated") {
+    console.log(session);
+    return (
+      <main className="page__content">
+        <section className="section_page post_details__page">
+          <SectionPost />
+          <SectionAddComment />
+          <SectionContentComments />
+        </section>
+      </main>
+    );
+  } else if (status === "loading") {
+    return <p>dd</p>;
+  } else {
+    redirect("/login");
+  }
 }
 
 export default PostDetailPage;
