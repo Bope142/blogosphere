@@ -10,7 +10,7 @@ import { signIn } from "next-auth/react";
 
 const FormLogin = () => {
   const loginWithGoogle = () => {
-    signIn("google", { callbackUrl: "http://localhost:3000/articles/15" });
+    signIn("google");
   };
   return (
     <div className="form__container">

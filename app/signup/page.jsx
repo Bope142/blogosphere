@@ -1,3 +1,4 @@
+"use client";
 import { InputForm } from "@/components/FormControll/FormControll";
 import "../../public/style/main.scss";
 import "./style.scss";
@@ -5,10 +6,18 @@ import TitleSection from "@/components/titleSection/TitleSection";
 import { ButtonSubmitForm } from "@/components/buttons/Buttons";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+
 const FormSignup = () => {
+  const signupWithGoogle = () => {
+    signIn("google");
+  };
   return (
     <div className="form__container">
-      <div className="btn__connect_with__google">
+      <div
+        className="btn__connect_with__google"
+        onClick={() => signupWithGoogle()}
+      >
         <FcGoogle /> <p>Continuez avec Google</p>
       </div>
       <span className="or">OU Inscrivez-vous avec Email</span>
