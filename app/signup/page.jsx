@@ -84,7 +84,7 @@ const FormSignup = () => {
       }
     } else {
       toast.warn(
-        "Veuillez remplir correctement tous les champs du formulaires..."
+        "Veuillez remplir correctement tous les champs du formulaires...."
       );
     }
   };
