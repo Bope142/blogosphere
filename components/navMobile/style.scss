@@ -17,7 +17,7 @@
 }
 
 .nav__mobile_show {
-  height: 350px;
+  height: 380px;
   padding-top: 115px;
   padding-bottom: 15px;
 }
@@ -70,9 +70,27 @@
     color: rgba(255, 255, 255, 0.397);
   }
 }
+.nav__mobile .connect-user {
+  align-items: center !important;
+  padding-bottom: 5px !important;
+}
 
+.btn-logout {
+  border-radius: 0.5rem !important;
+  padding: 8px 10px !important;
+  & svg {
+    height: 1.2rem !important;
+    width: 1.2rem !important;
+  }
+}
 @media only screen and (max-width: 570px) {
   .nav__mobile {
     padding-top: 85px;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .nav__mobile {
+    display: none !important;
   }
 }

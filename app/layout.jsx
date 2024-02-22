@@ -4,6 +4,8 @@ import Head from "next/head";
 import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 import NavMobile from "@/components/navMobile/NavMobile";
+import AuthProvider from "@/providers/authProviders";
+import QueryProvider from "@/providers/queryProviders";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,10 +33,14 @@ export default function RootLayout({ children }) {
       </Head>
       <body className={inter.className}>
         <main className="page__container">
-          <Header />
-          <NavMobile />
-          {children}
-          <Footer />
+          <AuthProvider>
+            <QueryProvider>
+              <Header />
+              <NavMobile />
+              {children}
+              <Footer />
+            </QueryProvider>
+          </AuthProvider>
         </main>
       </body>
     </html>

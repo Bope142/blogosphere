@@ -1,15 +1,44 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
-export const InputForm = ({ type, placeholder, labelText, name }) => {
+export const InputForm = ({
+  type,
+  placeholder,
+  labelText,
+  name,
+  isIncorrect,
+  id,
+  msgError,
+  changeMsgState,
+  stateName,
+}) => {
+  const [errorMsg, setErrorMsg] = useState(isIncorrect);
+  useEffect(() => {
+    setErrorMsg(isIncorrect);
+  }, [isIncorrect]);
+
   return (
-    <div className="input__form_container">
+    <div className={`input__form_container ${errorMsg ? "invalid-value" : ""}`}>
       <label htmlFor={name}>{labelText}</label>
-      <input type={type} name={name} id="" placeholder={placeholder} />
+      <input
+        type={type}
+        name={name}
+        id={id}
+        placeholder={placeholder}
+        required
+        onChange={() => {
+          if (errorMsg) {
+            setErrorMsg(false);
+            changeMsgState(false);
+          }
+        }}
+      />
+      <p className={`msg-error ${errorMsg && "visible-msg"}`}>{msgError}</p>
     </div>
   );
 };
 
-export const MemoForm = ({ placeholder, labelText, name }) => {
+export const MemoForm = ({ placeholder, labelText, name, defaultValue }) => {
   return (
     <div className="input__form_container">
       <label htmlFor={name}>{labelText}</label>
@@ -19,6 +48,7 @@ export const MemoForm = ({ placeholder, labelText, name }) => {
         placeholder={placeholder}
         cols="30"
         rows="10"
+        value={defaultValue}
       ></textarea>
     </div>
   );
