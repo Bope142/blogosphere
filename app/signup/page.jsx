@@ -20,7 +20,7 @@ const FormSignup = () => {
   const [isInvalidUsername, setIsInvalidUsername] = useState(false);
   const [isInvalidPassword, setIsInvalidPassword] = useState(false);
   const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
-  let pswd = "";
+  let pswd;
 
   const { mutate, isLoading } = useMutation(
     (newUser) => axios.post("/api/users", newUser),
@@ -30,8 +30,6 @@ const FormSignup = () => {
         setisInvalidEmail(false);
         setIsInvalidUsername(false);
         setIsInvalidPassword(false);
-        console.log("data ok", response.data);
-        console.log("pde ", pswd);
         toast.success("Félicitations ! Votre compte a été créé avec succès.");
 
         const result = await signIn("credentials", {
@@ -40,12 +38,6 @@ const FormSignup = () => {
           password: pswd,
           callbackUrl: "/",
         });
-        console.log(result);
-        // signIn("credentials", {
-        //   callbackUrl: "/",
-        //   email: response.data.email,
-        //   password: pswdUser,
-        // });
       },
       onError: (res, error) => {
         setawaitingBtnSubmit(false);
