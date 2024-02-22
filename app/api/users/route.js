@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/connect";
+const bcrypt = require("bcrypt");
 
 const createOneUser = async (data) => {
   try {
     const { username, password, email } = data;
+    const password_hash = await bcrypt.hash(password, 10);
     const newUser = await prisma.users.create({
       data: {
         username,
-        password_hash: password,
+        password_hash,
         email,
         role_user: "simple_user",
       },

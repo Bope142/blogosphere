@@ -34,6 +34,7 @@ const HeaderProfilStatut = () => {
   const { data: session, status } = useSession();
 
   if (status === "authenticated") {
+    console.log(session);
     return (
       <div className="header__profil_user connect-user">
         <ProfilPicture

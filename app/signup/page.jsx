@@ -12,7 +12,9 @@ import axios from "axios";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { LoaderPage } from "@/components/loaders/Loaders";
 const FormSignup = () => {
   const [isInvalidEmail, setisInvalidEmail] = useState(false);
   const [isInvalidUsername, setIsInvalidUsername] = useState(false);
@@ -28,7 +30,9 @@ const FormSignup = () => {
         setIsInvalidUsername(false);
         setIsInvalidPassword(false);
         console.log("data ok", response.data);
+        toast.success("Félicitations ! Votre compte a été créé avec succès.");
         signIn("credentials", {
+          callbackUrl: "/",
           email: response.data.email,
           password: response.data.password_hash,
         });
@@ -49,8 +53,10 @@ const FormSignup = () => {
     }
   );
 
-  const signupWithGoogle = () => {
-    signIn("google");
+  const signupWithGoogle = async () => {
+    const response = await signIn("google", {
+      callbackUrl: "/",
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -141,30 +147,47 @@ const FormSignup = () => {
 };
 
 function SignupPage() {
-  return (
-    <main className="page__content">
-      <section className="section_page contact__container">
-        <TitleSection
-          title={"INSCRIPTION "}
-          colorClass={"black"}
-          overview={"HI👋 BON RETOUR"}
+  const { status } = useSession();
+  const router = useRouter();
+  if (status === "loading") {
+    return (
+      <main className="page__content">
+        <LoaderPage />
+      </main>
+    );
+  } else if (status === "authenticated") {
+    router.push("/");
+    return (
+      <main className="page__content">
+        <LoaderPage />
+      </main>
+    );
+  } else {
+    return (
+      <main className="page__content">
+        <section className="section_page contact__container">
+          <TitleSection
+            title={"INSCRIPTION "}
+            colorClass={"black"}
+            overview={"HI👋 BON RETOUR"}
+          />
+          <FormSignup />
+        </section>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
         />
-        <FormSignup />
-      </section>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </main>
-  );
+      </main>
+    );
+  }
 }
 
 export default SignupPage;
