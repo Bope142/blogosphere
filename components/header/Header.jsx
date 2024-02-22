@@ -7,6 +7,8 @@ import { ButtonSimpleLink } from "../buttons/Buttons";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { IoIosLogOut } from "react-icons/io";
+
 const ProfilPicture = ({ username, profilPath }) => {
   if (profilPath === null) {
     return (
@@ -30,14 +32,23 @@ const ProfilPicture = ({ username, profilPath }) => {
 
 const HeaderProfilStatut = () => {
   const { data: session, status } = useSession();
+
   if (status === "authenticated") {
-    console.log(session);
     return (
       <div className="header__profil_user connect-user">
         <ProfilPicture
           username={session.user.name}
           profilPath={session.user.image}
         />
+        <button
+          className="btn btn-logout btn-link "
+          onClick={() => {
+            signOut({ callbackUrl: "http://localhost:3000/login" });
+          }}
+          title="se déconnecter"
+        >
+          <IoIosLogOut />
+        </button>
       </div>
     );
   } else {
