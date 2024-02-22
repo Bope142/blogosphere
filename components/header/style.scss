@@ -92,6 +92,32 @@
   column-gap: 15px;
 }
 
+.connect-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  & .profil__picture__users {
+    display: flex;
+    height: 50px;
+    width: 50px;
+    background: $colorPrimaryBase;
+    flex: none;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $fontManropeExtraBold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: white;
+    overflow: hidden;
+    & img {
+      border-radius: 50%;
+    }
+  }
+}
 .btn-menu {
   background: $colorPrimaryBase;
   display: none !important;

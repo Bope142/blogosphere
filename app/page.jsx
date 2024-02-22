@@ -1,3 +1,4 @@
+"use client";
 import {
   CardCategory,
   CardCirclePost,
@@ -9,6 +10,8 @@ import {
 import "../public/style/main.scss";
 import "./home.style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
+import { LoaderPage } from "@/components/loaders/Loaders";
+import { useSession } from "next-auth/react";
 const categories = [
   { title: "Technologie et Innovation", cover: "/images/tech_cover.png" },
   { title: "Voyage et Aventure", cover: "/images/voyage.jpg" },
@@ -379,14 +382,23 @@ const SectionRandomPostThirthCategory = () => {
 };
 
 export default function Home() {
-  return (
-    <main className="page__content" id="homePage">
-      <CategoriePostSection />
-      <BestPostSection />
-      <SectionCategory />
-      <SectionRandomNewsFirstCategory />
-      <SectionRandomPostSecondCategory />
-      <SectionRandomPostThirthCategory />
-    </main>
-  );
+  const { data: session, status } = useSession();
+  if (status === "loading") {
+    return (
+      <main className="page__content" id="homePage">
+        <LoaderPage />
+      </main>
+    );
+  } else {
+    return (
+      <main className="page__content" id="homePage">
+        <CategoriePostSection />
+        <BestPostSection />
+        <SectionCategory />
+        <SectionRandomNewsFirstCategory />
+        <SectionRandomPostSecondCategory />
+        <SectionRandomPostThirthCategory />
+      </main>
+    );
+  }
 }

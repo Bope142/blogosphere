@@ -4,16 +4,62 @@ import "./style.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ButtonSimpleLink } from "../buttons/Buttons";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { IoIosLogOut } from "react-icons/io";
+import { signOut } from "next-auth/react";
 
-const ProfilStatut = () => {
-  return (
-    <div className="profil_user">
-      <Link href={"/login"} className="simple_link">
-        Se connecter
+const ProfilPicture = ({ username, profilPath }) => {
+  if (profilPath === null) {
+    return (
+      <Link href={"/myprofil"} className="profil__picture__users no-pic">
+        <p>{username.substring(0, 2).toUpperCase()}</p>
       </Link>
-      <ButtonSimpleLink path={"/signup"} text={"S'inscrire"} />
-    </div>
-  );
+    );
+  } else {
+    return (
+      <Link href={"/myprofil"} className="profil__picture__users with-pic">
+        <Image
+          src={profilPath}
+          width={100}
+          height={100}
+          alt={"photo profile user " + username}
+        />
+      </Link>
+    );
+  }
+};
+const ProfilStatut = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "authenticated") {
+    return (
+      <div className="profil_user connect-user">
+        <ProfilPicture
+          username={session.user.name}
+          profilPath={session.user.image}
+        />
+        <button
+          className="btn btn-logout btn-link "
+          onClick={() => {
+            signOut({ callbackUrl: "http://localhost:3000/login" });
+          }}
+          title="se déconnecter"
+        >
+          <IoIosLogOut />
+        </button>
+      </div>
+    );
+  } else {
+    return (
+      <div className="profil_user">
+        <Link href={"/login"} className="simple_link">
+          Se connecter
+        </Link>
+        <ButtonSimpleLink path={"/signup"} text={"S'inscrire"} />
+      </div>
+    );
+  }
 };
 
 function NavMobile() {

@@ -15,12 +15,49 @@ const ButtonIcoLink = ({ path, Icons }) => {
     </Link>
   );
 };
-const ButtonSubmitForm = ({ text }) => {
+const ButtonSubmitForm = ({ text, isAwaiting }) => {
   return (
-    <button type="submit" className="btn btn-link btn-clic-effect">
-      {text}
+    <button
+      type="submit"
+      className={`btn btn-link btn-clic-effect ${
+        isAwaiting && "btn-awaiting "
+      }`}
+    >
+      {isAwaiting ? <div className="loader-btn"></div> : text}
     </button>
   );
 };
 
-export { ButtonSimpleLink, ButtonIcoLink, ButtonSubmitForm };
+const ButtonSimple = ({ text, isAwaiting, eventHandler, isEnable }) => {
+  return (
+    <button
+      className={`btn btn-link btn-clic-effect ${
+        isAwaiting && "btn-awaiting "
+      } ${!isEnable && "enable-btn "}`}
+      onClick={() => eventHandler}
+    >
+      {isAwaiting ? <div className="loader-btn"></div> : text}
+    </button>
+  );
+};
+
+const ButtonDefault = ({ text, isAwaiting, eventHandler, isEnable }) => {
+  return (
+    <button
+      className={`btn btn-default btn-clic-effect ${
+        isAwaiting && "btn-awaiting "
+      } ${!isEnable && "enable-btn "}`}
+      onClick={() => eventHandler}
+    >
+      {isAwaiting ? <div className="loader-btn"></div> : text}
+    </button>
+  );
+};
+
+export {
+  ButtonSimpleLink,
+  ButtonIcoLink,
+  ButtonSubmitForm,
+  ButtonSimple,
+  ButtonDefault,
+};

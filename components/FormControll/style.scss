@@ -4,10 +4,11 @@
 .input__form_container {
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
+  row-gap: 15px;
   & label {
-    font-family: $fontManropeRegular;
-    font-size: 1rem;
+    font-family: $fontManropeMedium;
+    font-size: 0.9rem;
+    text-transform: uppercase;
   }
   & input,
   textarea {
@@ -21,5 +22,34 @@
     &:focus {
       box-shadow: 0 0 2px 5px rgba($colorPrimaryBase, 0.08);
     }
+    // &:empty {
+    //   border: 1px solid rgba(red, 0.95);
+    //   box-shadow: 0 0 2px 5px rgba(red, 0.2);
+    //   transition: all 0.3s linear;
+    // }
+    // &:invalid {
+    //   border: 1px solid rgba(red, 0.95);
+    //   box-shadow: 0 0 2px 5px rgba(red, 0.2);
+    //   transition: all 0.3s linear;
+    // }
+  }
+  & .msg-error {
+    font-family: $fontManropeLight;
+    font-size: 0.8rem;
+    color: red;
+    opacity: 0;
+    transition: all 0.3s linear;
+  }
+  & .visible-msg {
+    opacity: 1;
+  }
+}
+
+.invalid-value {
+  & input,
+  textarea {
+    border: 1px solid rgba(red, 0.95) !important;
+    box-shadow: 0 0 2px 5px rgba(red, 0.2) !important;
+    transition: all 0.3s linear;
   }
 }
