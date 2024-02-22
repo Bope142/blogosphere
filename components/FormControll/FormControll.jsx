@@ -38,7 +38,7 @@ export const InputForm = ({
   );
 };
 
-export const MemoForm = ({ placeholder, labelText, name }) => {
+export const MemoForm = ({ placeholder, labelText, name, defaultValue }) => {
   return (
     <div className="input__form_container">
       <label htmlFor={name}>{labelText}</label>
@@ -48,6 +48,7 @@ export const MemoForm = ({ placeholder, labelText, name }) => {
         placeholder={placeholder}
         cols="30"
         rows="10"
+        value={defaultValue}
       ></textarea>
     </div>
   );

@@ -88,3 +88,9 @@
     padding-top: 85px;
   }
 }
+
+@media only screen and (min-width: 1200px) {
+  .nav__mobile {
+    display: none !important;
+  }
+}

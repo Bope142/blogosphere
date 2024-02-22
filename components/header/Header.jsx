@@ -91,7 +91,7 @@ const HeaderNav = () => {
 };
 const HeaderLogo = () => {
   return (
-    <div className="header__logo" onClick={() => signOut()}>
+    <div className="header__logo">
       <svg
         width="129"
         height="130"

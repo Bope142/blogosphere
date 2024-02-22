@@ -20,22 +20,32 @@ const FormSignup = () => {
   const [isInvalidUsername, setIsInvalidUsername] = useState(false);
   const [isInvalidPassword, setIsInvalidPassword] = useState(false);
   const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
+  let pswd = "";
 
   const { mutate, isLoading } = useMutation(
     (newUser) => axios.post("/api/users", newUser),
     {
-      onSuccess: (response) => {
+      onSuccess: async (response) => {
         setawaitingBtnSubmit(false);
         setisInvalidEmail(false);
         setIsInvalidUsername(false);
         setIsInvalidPassword(false);
         console.log("data ok", response.data);
+        console.log("pde ", pswd);
         toast.success("Félicitations ! Votre compte a été créé avec succès.");
-        signIn("credentials", {
-          callbackUrl: "/",
+
+        const result = await signIn("credentials", {
+          redirect: false,
           email: response.data.email,
-          password: response.data.password_hash,
+          password: pswd,
+          callbackUrl: "/",
         });
+        console.log(result);
+        // signIn("credentials", {
+        //   callbackUrl: "/",
+        //   email: response.data.email,
+        //   password: pswdUser,
+        // });
       },
       onError: (res, error) => {
         setawaitingBtnSubmit(false);
@@ -62,17 +72,18 @@ const FormSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isInvalidEmail && !isInvalidPassword && !isInvalidUsername) {
-      const form = e.target;
-      const formData = new FormData(form);
-      console.log(...formData);
-      const email = formData.get("email");
-      const username = formData.get("username");
-      const password = formData.get("password");
-      const confirmPassword = formData.get("passwordConfirm");
+      let form = e.target;
+      let formData = new FormData(form);
+      let email = formData.get("email");
+      let username = formData.get("username");
+      let password = formData.get("password");
+      let confirmPassword = formData.get("passwordConfirm");
+      pswd = formData.get("password");
       if (confirmPassword !== password) {
         setIsInvalidPassword(true);
       } else {
         setawaitingBtnSubmit(true);
+
         mutate({
           email,
           username,

@@ -59,13 +59,11 @@ const checkExistUsername = async (username) => {
 export const POST = async (req) => {
   try {
     const data = await req.json();
-    console.log(data);
     const userWithEmail = await existUserEmail(data.email);
     if (!userWithEmail) {
       const existUsername = await checkExistUsername(data.username);
       if (!existUsername) {
         const user = await createOneUser(data);
-        console.log(user);
         return NextResponse.json(user, {
           status: 200,
         });
