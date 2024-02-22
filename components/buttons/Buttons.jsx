@@ -15,10 +15,15 @@ const ButtonIcoLink = ({ path, Icons }) => {
     </Link>
   );
 };
-const ButtonSubmitForm = ({ text }) => {
+const ButtonSubmitForm = ({ text, isAwaiting }) => {
   return (
-    <button type="submit" className="btn btn-link btn-clic-effect">
-      {text}
+    <button
+      type="submit"
+      className={`btn btn-link btn-clic-effect ${
+        isAwaiting && "btn-awaiting "
+      }`}
+    >
+      {isAwaiting ? <div className="loader-btn"></div> : text}
     </button>
   );
 };

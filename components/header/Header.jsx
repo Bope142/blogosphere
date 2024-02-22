@@ -4,15 +4,52 @@ import "./style.scss";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ButtonSimpleLink } from "../buttons/Buttons";
-const HeaderProfilStatut = () => {
-  return (
-    <div className="header__profil_user">
-      <Link href={"/login"} className="simple_link">
-        Se connecter
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+const ProfilPicture = ({ username, profilPath }) => {
+  if (profilPath === null) {
+    return (
+      <Link href={"/myprofil"} className="profil__picture__users no-pic">
+        <p>{username.substring(0, 2).toUpperCase()}</p>
       </Link>
-      <ButtonSimpleLink path={"/signup"} text={"S'inscrire"} />
-    </div>
-  );
+    );
+  } else {
+    return (
+      <Link href={"/myprofil"} className="profil__picture__users with-pic">
+        <Image
+          src={profilPath}
+          width={100}
+          height={100}
+          alt={"photo profile user " + username}
+        />
+      </Link>
+    );
+  }
+};
+
+const HeaderProfilStatut = () => {
+  const { data: session, status } = useSession();
+  if (status === "authenticated") {
+    console.log(session);
+    return (
+      <div className="header__profil_user connect-user">
+        <ProfilPicture
+          username={session.user.name}
+          profilPath={session.user.image}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="header__profil_user">
+        <Link href={"/login"} className="simple_link">
+          Se connecter
+        </Link>
+        <ButtonSimpleLink path={"/signup"} text={"S'inscrire"} />
+      </div>
+    );
+  }
 };
 const HeaderNav = () => {
   const pathname = usePathname();
@@ -42,7 +79,7 @@ const HeaderNav = () => {
 };
 const HeaderLogo = () => {
   return (
-    <div className="header__logo">
+    <div className="header__logo" onClick={() => signOut()}>
       <svg
         width="129"
         height="130"

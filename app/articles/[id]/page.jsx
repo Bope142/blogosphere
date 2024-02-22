@@ -124,9 +124,11 @@ function PostDetailPage() {
       </main>
     );
   } else if (status === "loading") {
+    console.log(status);
     return <p>dd</p>;
   } else {
-    redirect("/login");
+    console.log(status);
+    return <p>NON EN LIGNE</p>;
   }
 }
 

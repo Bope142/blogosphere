@@ -7,11 +7,46 @@ import { ButtonSubmitForm } from "@/components/buttons/Buttons";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { redirect } from "next/navigation";
 const FormLogin = () => {
-  const loginWithGoogle = () => {
-    signIn("google");
+  const loginWithGoogle = async () => {
+    const response = await signIn("google", {
+      callbackUrl: "/",
+    });
+    console.log(response);
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    try {
+      const result = await signIn("credentials", {
+        redirect: true,
+        email,
+        password,
+        callbackUrl: "/",
+      });
+      if (result.status === 200) {
+        console.log(result);
+        redirect("/");
+      } else {
+        toast.error(
+          "Les identifiants que vous avez fournis ne sont pas valides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer."
+        );
+      }
+    } catch (error) {
+      // toast.error(
+      //   "Les identifiants que vous avez fournis ne sont pas valides. Veuillez vérifier votre adresse e-mail et votre mot de passe, puis réessayer."
+      // );
+    }
+  };
+
   return (
     <div className="form__container">
       <div
@@ -21,7 +56,7 @@ const FormLogin = () => {
         <FcGoogle /> <p>Continuez avec Google</p>
       </div>
       <span className="or">OU connectez-vous avec Email</span>
-      <form id="form__login" action="">
+      <form id="form__login" onSubmit={handleSubmit}>
         <InputForm
           type={"email"}
           placeholder={"Entrez adresse email ici"}
@@ -60,6 +95,18 @@ function LoginPage() {
         />
         <FormLogin />
       </section>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </main>
   );
 }

@@ -3,6 +3,8 @@
 html {
   scroll-behavior: smooth;
   user-select: none;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 * {
@@ -11,16 +13,12 @@ html {
 
 body {
   position: relative;
-  height: 100vh;
-  overflow: hidden;
   font-family: $fontManropeLight;
   background: $colorPrimaryBase;
 }
 
 .page__container {
   background: $colorPrimary100;
-  height: 100vh;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -113,4 +111,24 @@ option {
   &::selection {
     background: white;
   }
+}
+
+.Toastify__toast-container {
+  & * {
+    font-family: $fontManropeMedium !important;
+    font-size: 0.8rem;
+    line-height: 1.2rem;
+  }
+}
+
+.Toastify__progress-bar {
+  background: $colorPrimaryBase !important;
+}
+.Toastify__progress-bar--info {
+  background: $colorPrimaryBase !important;
+}
+
+.Toastify__toast-icon svg * {
+  color: $colorPrimaryBase !important;
+  fill: $colorPrimaryBase !important;
 }
