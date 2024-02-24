@@ -18,6 +18,7 @@ CREATE TABLE Users (
 CREATE TABLE Categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     name_categorie VARCHAR(255) NOT NULL,
+    coverPath TEXT NOT NULL,
     CONSTRAINT UNIQUE (name_categorie)
 );
 
