@@ -14,6 +14,7 @@ import { ButtonSimple } from "@/components/buttons/Buttons";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useGetCategories } from "@/hooks/useCategorie";
 
 const SectionUploadCover = ({ setCover }) => {
   const fileInputRef = useRef(null);
@@ -155,9 +156,9 @@ const SectionUploadCover = ({ setCover }) => {
     </>
   );
 };
-function PageCreatePost() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+
+const FormCreatePost = ({ email, name }) => {
+  const { data: categories, isFetching } = useGetCategories();
   const [coverArticle, setcoverArticle] = useState(null);
 
   const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
@@ -197,16 +198,21 @@ function PageCreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  };
+    let form = e.target;
+    let formData = new FormData(form);
+    let title = formData.get("title");
+    let readTimeMinutes = formData.get("read_time_minutes");
+    let categoryId = parseInt(formData.get("category_id"));
+    if (categoryId < 1) {
+      toast.warn("Veuillez choisir une catégorie");
+    } else {
+      //upload article cover image to firebase
+      const urlCoverArticle = await uploadCover(coverArticle);
 
-  if (status === "loading") {
-    return (
-      <main className="page__content">
-        <LoaderPage />
-      </main>
-    );
-  } else if (status === "authenticated") {
-    const { image, name, overview } = session.user;
+      console.log(...formData);
+    }
+  };
+  if (!isFetching) {
     return (
       <main className="page__content">
         <section className="section_page content">
@@ -217,14 +223,30 @@ function PageCreatePost() {
           />
           <form onSubmit={handleSubmit}>
             <SectionUploadCover setCover={setcoverArticle} />
-            <input type="text" name="" id="" placeholder="Titre de l'article" />
-            <select name="" id="">
-              <option value="1">Choisisez une catégorie</option>
-              <option value="1">Tech</option>
-              <option value="1">Tech</option>
-              <option value="1">Tech</option>
-              <option value="1">Tech</option>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Titre de l'article"
+              required
+            />
+
+            <select name="category_id" id="category_id" required>
+              <option value="-1">Choisisez une catégorie</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category.category_id}>
+                  {category.name_categorie}
+                </option>
+              ))}
             </select>
+
+            <input
+              type="number"
+              name="read_time_minutes"
+              id="read_time_minutes"
+              placeholder="Estimation temps de lecture... Ex: 5 MIN"
+              required
+            />
             <QuillEditor
               value={content}
               onChange={handleEditorChange}
@@ -249,6 +271,28 @@ function PageCreatePost() {
         />
       </main>
     );
+  } else {
+    return (
+      <main className="page__content" id="homePage">
+        <LoaderPage />
+      </main>
+    );
+  }
+};
+function PageCreatePost() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") {
+    return (
+      <main className="page__content">
+        <LoaderPage />
+      </main>
+    );
+  } else if (status === "authenticated") {
+    const { email, name } = session.user;
+
+    return <FormCreatePost email={email} name={name} />;
   } else {
     router.push("/login");
     return (
