@@ -12,31 +12,39 @@ import { AiOutlineLinkedin } from "react-icons/ai";
 import { FaGithub } from "react-icons/fa";
 import { AiFillLike } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
-function CardCategory({ title, cover }) {
-  return (
-    <div className="card card__categories">
-      <div className="content_cover">
-        <Image
-          src={cover}
-          alt={`image couverture catégorie post ${title}`}
-          width={100}
-          height={100}
-          className="cover__category"
-        />
+function CardCategory({ id, title, cover, loading }) {
+  if (loading) {
+    return (
+      <div className="card card__categories">
+        <div className="skeleton__loader"></div>
       </div>
-      <div className="content">
-        <div className="infos">
-          <p>{title}</p>
-          <Link
-            href={"/categories"}
-            className="btn-swoh-post-cat btn-clic-effect"
-          >
-            <GoArrowUpRight />
-          </Link>
+    );
+  } else {
+    return (
+      <div className="card card__categories">
+        <div className="content_cover">
+          <Image
+            src={cover}
+            alt={`image couverture catégorie  ${title}`}
+            width={100}
+            height={100}
+            className="cover__category"
+          />
+        </div>
+        <div className="content">
+          <div className="infos">
+            <p>{title}</p>
+            <Link
+              href={`/articles/categories/${id}`}
+              className="btn-swoh-post-cat btn-clic-effect"
+            >
+              <GoArrowUpRight />
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 const CardPostSimple = ({
   category,
