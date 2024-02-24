@@ -12,6 +12,7 @@ import "./home.style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { useSession } from "next-auth/react";
+import { useGetCategories } from "@/hooks/useCategorie";
 const categories = [
   { title: "Technologie et Innovation", cover: "/images/tech_cover.png" },
   { title: "Voyage et Aventure", cover: "/images/voyage.jpg" },
@@ -30,17 +31,28 @@ const categories = [
   { title: "Actualités et Politique", cover: "/images/Politique.jpg" },
 ];
 const CategoriePostSection = () => {
-  return (
+  const { data: categories, isFetching } = useGetCategories();
+
+  const display = isFetching ? (
+    <section className="section_page content__categorie_post">
+      {[...Array(8)].map((_, index) => (
+        <CardCategory key={index} title={""} cover={""} id={0} loading={true} />
+      ))}
+    </section>
+  ) : (
     <section className="section_page content__categorie_post">
       {categories.map((category, index) => (
         <CardCategory
           key={index}
-          title={category.title}
-          cover={category.cover}
+          title={category.name_categorie}
+          cover={category.coverPath}
+          id={category.category_id}
+          loading={false}
         />
       ))}
     </section>
   );
+  return display;
 };
 
 const BestPostSection = () => {
