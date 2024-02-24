@@ -15,6 +15,8 @@ import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useGetCategories } from "@/hooks/useCategorie";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebaseConfig";
 
 const SectionUploadCover = ({ setCover }) => {
   const fileInputRef = useRef(null);
@@ -196,6 +198,33 @@ const FormCreatePost = ({ email, name }) => {
     //setContent(newContent);
   };
 
+  const uploadArticleCover = async (file) => {
+    try {
+      function generateUniqueCoverPhotoName() {
+        const timestamp = new Date().getTime();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        const uniqueName = `cover_${timestamp}_${randomString}`;
+        return uniqueName;
+      }
+
+      if (file === null) {
+        return "/images/categories_cover/art.jpg";
+      } else {
+        let filename = generateUniqueCoverPhotoName();
+
+        const storageRef = ref(storage, `articles/${filename}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        return downloadURL;
+      }
+    } catch (error) {
+      console.error("Error uploading file: ", error);
+      toast.error("Erreur lors du téléchargement du fichier...");
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let form = e.target;
@@ -206,78 +235,71 @@ const FormCreatePost = ({ email, name }) => {
     if (categoryId < 1) {
       toast.warn("Veuillez choisir une catégorie");
     } else {
-      //upload article cover image to firebase
-      const urlCoverArticle = await uploadCover(coverArticle);
-
-      console.log(...formData);
+      const urlCoverArticle = await uploadArticleCover(coverArticle);
+      if (urlCoverArticle !== null) {
+        console.log(...formData);
+      }
     }
   };
-  if (!isFetching) {
-    return (
-      <main className="page__content">
-        <section className="section_page content">
-          <TitleSection
-            title={"Publier un article"}
-            colorClass={"black"}
-            overview={"Partagez un post avec la communauté"}
+  return (
+    <main className="page__content">
+      <section className="section_page content">
+        <TitleSection
+          title={"Publier un article"}
+          colorClass={"black"}
+          overview={"Partagez un post avec la communauté"}
+        />
+        <form onSubmit={handleSubmit}>
+          <SectionUploadCover setCover={setcoverArticle} />
+          <input
+            type="text"
+            name="title"
+            id="title"
+            placeholder="Titre de l'article"
+            required
           />
-          <form onSubmit={handleSubmit}>
-            <SectionUploadCover setCover={setcoverArticle} />
-            <input
-              type="text"
-              name="title"
-              id="title"
-              placeholder="Titre de l'article"
-              required
-            />
 
-            <select name="category_id" id="category_id" required>
-              <option value="-1">Choisisez une catégorie</option>
-              {categories.map((category, index) => (
+          <select name="category_id" id="category_id" required>
+            <option value="-1">Choisisez une catégorie</option>
+            {!isFetching &&
+              categories.map((category, index) => (
                 <option key={index} value={category.category_id}>
                   {category.name_categorie}
                 </option>
               ))}
-            </select>
+          </select>
 
-            <input
-              type="number"
-              name="read_time_minutes"
-              id="read_time_minutes"
-              placeholder="Estimation temps de lecture... Ex: 5 MIN"
-              required
-            />
-            <QuillEditor
-              value={content}
-              onChange={handleEditorChange}
-              modules={quillModules}
-              formats={quillFormats}
-              className="w-full h-[70%] mt-10 bg-white"
-            />
-            <ButtonSubmitForm text={"Publier "} />
-          </form>
-        </section>
-        <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-      </main>
-    );
-  } else {
-    return (
-      <main className="page__content" id="homePage">
-        <LoaderPage />
-      </main>
-    );
-  }
+          <input
+            type="number"
+            name="read_time_minutes"
+            id="read_time_minutes"
+            placeholder="Estimation temps de lecture... Ex: 5 MIN"
+            required
+          />
+          <QuillEditor
+            value={content}
+            onChange={handleEditorChange}
+            modules={quillModules}
+            formats={quillFormats}
+            className="w-full h-[70%] mt-10 bg-white"
+          />
+          <ButtonSubmitForm text={"Publier "} />
+        </form>
+      </section>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </main>
+  );
 };
 function PageCreatePost() {
   const { data: session, status } = useSession();
