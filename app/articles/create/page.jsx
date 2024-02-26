@@ -2,6 +2,8 @@
 import React, { useState, useRef } from "react";
 import "../../../public/style/main.scss";
 import "./style.scss";
+import axios from "axios";
+import dynamic from "next/dynamic";
 import TitleSection from "@/components/titleSection/TitleSection";
 import { ButtonSubmitForm } from "@/components/buttons/Buttons";
 import { LoaderPage } from "@/components/loaders/Loaders";
@@ -21,9 +23,11 @@ import {
 } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 import { useMutation } from "react-query";
-import axios from "axios";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.bubble.css";
+import { navigate } from "@/actions/navigate";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const SectionUploadCover = ({ setCover }) => {
   const fileInputRef = useRef(null);
@@ -171,40 +175,24 @@ const FormCreatePost = ({ email, name }) => {
   const [refFileUpload, setRefFileUpload] = useState(null);
   const [conteArticle, setConteArticle] = useState("");
   const quillRef = useRef(null);
-
-  const modules = {
+  const [coverArticle, setcoverArticle] = useState(null);
+  const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
+  const toolbarOptions = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
+      [{ font: [] }],
+      [{ header: [1, 2, 3] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ color: [] }, { background: [] }],
+      [{ script: "sub" }, { script: "super" }],
+      ["blockquote", "code-block"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
       ["link"],
       ["clean"],
     ],
   };
 
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-  ];
-
-  const handleChangeRichEditor = (value) => {
-    setConteArticle(value);
-  };
-
-  const { mutate } = useMutation(
+  const { mutate: publishArticle } = useMutation(
     (newArticle) => axios.post("/api/articles", newArticle),
     {
       onSuccess: (response) => {
@@ -214,6 +202,7 @@ const FormCreatePost = ({ email, name }) => {
           toast.success(
             "Félicitations ! Votre article a été créé avec succès."
           );
+          navigate(`myprofil/articles/${data.article_id}`);
         }
         setawaitingBtnSubmit(false);
         setRefFileUpload(null);
@@ -239,8 +228,9 @@ const FormCreatePost = ({ email, name }) => {
     }
   );
 
-  const [coverArticle, setcoverArticle] = useState(null);
-  const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
+  const handleChange = (value) => {
+    setConteArticle(value);
+  };
 
   const uploadArticleCover = async (file) => {
     try {
@@ -282,27 +272,33 @@ const FormCreatePost = ({ email, name }) => {
       toast.warn("Veuillez choisir une catégorie");
       setawaitingBtnSubmit(false);
     } else {
-      const urlCoverArticle = await uploadArticleCover(coverArticle);
-      if (urlCoverArticle !== null) {
-        console.log(...formData);
-        let article_cover = urlCoverArticle;
-        let content = conteArticle;
-        mutate({
-          title,
-          read_time_minutes,
-          category_id,
-          article_cover,
-          content,
-          email,
-        });
-      } else {
+      if (conteArticle === "") {
+        toast.warn("Veuillez ajouter un contentus à votre article...");
         setawaitingBtnSubmit(false);
+      } else {
+        const urlCoverArticle = await uploadArticleCover(coverArticle);
+        if (urlCoverArticle !== null) {
+          console.log(...formData);
+          let article_cover = urlCoverArticle;
+          let content = conteArticle;
+          publishArticle({
+            title,
+            read_time_minutes,
+            category_id,
+            article_cover,
+            content,
+            email,
+          });
+        } else {
+          setawaitingBtnSubmit(false);
+        }
       }
     }
   };
+
   return (
     <main className="page__content">
-      <section className="section_page content">
+      <section className="section_page content-form">
         <TitleSection
           title={"Publier un article"}
           colorClass={"black"}
@@ -335,20 +331,16 @@ const FormCreatePost = ({ email, name }) => {
             placeholder="Estimation temps de lecture... Ex: 5 MIN"
             required
           />
-          {/* <QuillEditor
-            value={content}
-            modules={quillModules}
-            formats={quillFormats}
-            className="w-full h-[70%] mt-10 bg-white"
-          /> */}
-          <ReactQuill
-            ref={quillRef}
-            value={conteArticle}
-            modules={modules}
-            formats={formats}
-            onChange={handleChangeRichEditor}
-          />
 
+          {typeof document !== "undefined" && (
+            <ReactQuill
+              ref={quillRef}
+              theme="snow" // Appliquer le thème Snow
+              value={conteArticle}
+              onChange={handleChange}
+              modules={toolbarOptions}
+            />
+          )}
           <ButtonSubmitForm text={"Publier "} isAwaiting={awaitingBtnSubmit} />
         </form>
       </section>

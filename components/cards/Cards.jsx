@@ -12,6 +12,7 @@ import { AiOutlineLinkedin } from "react-icons/ai";
 import { FaGithub } from "react-icons/fa";
 import { AiFillLike } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
+import { formatDateTime } from "@/utils/date";
 function CardCategory({ id, title, cover, loading }) {
   if (loading) {
     return (
@@ -67,7 +68,7 @@ const CardPostSimple = ({
       <div className="details">
         <div className="details-lecture">
           <div className="cat">{category}</div>
-          <p className="duration">{duration}</p>
+          <p className="duration">{duration} Min</p>
         </div>
         <p className="title__post">{title}</p>
         <p className="post__date">{datePost}</p>
@@ -215,6 +216,7 @@ const CardPostDetails = ({
   comment,
   postText,
   postDuration,
+  postDateTime,
 }) => {
   return (
     <div className="post__card">
@@ -224,6 +226,9 @@ const CardPostDetails = ({
         </div>
         <div className="post__duration">
           <p> {postDuration} Min</p>
+        </div>
+        <div className="post__duration">
+          <p> {formatDateTime(postDateTime)}</p>
         </div>
       </div>
       <div className="cover">
@@ -257,7 +262,10 @@ const CardPostDetails = ({
           </button>
         </div>
       </div>
-      <div className="content__post__text">{postText}</div>
+      <div
+        className="content__post__text"
+        dangerouslySetInnerHTML={{ __html: postText }}
+      ></div>
     </div>
   );
 };

@@ -45,3 +45,19 @@
   flex-wrap: wrap;
   gap: 15px;
 }
+
+.no-connected {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  padding: 25px;
+  background: white;
+  border-radius: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  & p {
+    font-family: $fontManropeLight;
+    text-align: center;
+    line-height: 1.5rem;
+  }
+}

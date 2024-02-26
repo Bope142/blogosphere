@@ -1,7 +1,7 @@
 @import "../../../public/style/reset.scss";
 @import "../../../public/style/variable.scss";
 
-.content {
+.content-form {
   display: flex;
   flex-direction: column;
   row-gap: 50px;
@@ -11,9 +11,11 @@ form {
   display: flex;
   flex-direction: column;
   row-gap: 25px;
+  align-self: center;
   & .btn {
     align-self: center;
   }
+  max-width: 700px;
 }
 
 .ql-editor {

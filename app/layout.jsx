@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <Head>
-        <meta charSet="UTF-8" />
+        <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />

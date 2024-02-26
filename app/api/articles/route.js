@@ -1,19 +1,7 @@
 import prisma from "@/lib/connect";
+import { getUserIdBasedOnEmail } from "@/utils/users";
 import { NextResponse } from "next/server";
 
-const getUserIdBasedOnEmail = async (email) => {
-  try {
-    const user = await prisma.users.findUnique({
-      where: { email: email },
-    });
-    return user !== null ? user.user_id : null;
-  } catch (error) {
-    console.log(error);
-    return null;
-  } finally {
-    await prisma.$disconnect();
-  }
-};
 export const POST = async (req) => {
   try {
     const data = await req.json();
@@ -37,6 +25,7 @@ export const POST = async (req) => {
     } = data;
     console.log(content);
     const user_id = await getUserIdBasedOnEmail(email);
+
     if (user_id === null) {
       return NextResponse.json(
         {
