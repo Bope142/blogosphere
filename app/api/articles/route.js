@@ -35,7 +35,7 @@ export const POST = async (req) => {
       content,
       email,
     } = data;
-
+    console.log(content);
     const user_id = await getUserIdBasedOnEmail(email);
     if (user_id === null) {
       return NextResponse.json(

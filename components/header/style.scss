@@ -5,9 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: fixed;
+  position: sticky;
   padding: 25px 0;
-  width: 100%;
+  top: 0;
   z-index: 58;
   background: white;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;

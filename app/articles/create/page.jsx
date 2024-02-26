@@ -4,8 +4,6 @@ import "../../../public/style/main.scss";
 import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
 import { ButtonSubmitForm } from "@/components/buttons/Buttons";
-import "react-quill/dist/quill.snow.css";
-import dynamic from "next/dynamic";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -24,6 +22,8 @@ import {
 import { storage } from "@/lib/firebaseConfig";
 import { useMutation } from "react-query";
 import axios from "axios";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const SectionUploadCover = ({ setCover }) => {
   const fileInputRef = useRef(null);
@@ -134,10 +134,10 @@ const SectionUploadCover = ({ setCover }) => {
               <IoMdImages />
             </div>
 
-            <span class="text">
+            <span className="text">
               faites glisser et déposez la photo de couverture ici
             </span>
-            <span class="text-two">OU</span>
+            <span className="text-two">OU</span>
             <ButtonSimple
               text={"Parcourir"}
               isAwaiting={false}
@@ -169,6 +169,41 @@ const SectionUploadCover = ({ setCover }) => {
 const FormCreatePost = ({ email, name }) => {
   const { data: categories, isFetching } = useGetCategories();
   const [refFileUpload, setRefFileUpload] = useState(null);
+  const [conteArticle, setConteArticle] = useState("");
+  const quillRef = useRef(null);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+  ];
+
+  const handleChangeRichEditor = (value) => {
+    setConteArticle(value);
+  };
+
   const { mutate } = useMutation(
     (newArticle) => axios.post("/api/articles", newArticle),
     {
@@ -199,7 +234,6 @@ const FormCreatePost = ({ email, name }) => {
             "Nous sommes désolés, mais il semble y avoir eu un problème lors de la tentative de création de votre article sur le blog. Veuillez nous excuser pour ce désagrément. "
           );
           setawaitingBtnSubmit(false);
-          // Handle any errors during image deletion (optional)
         }
       },
     }
@@ -207,37 +241,6 @@ const FormCreatePost = ({ email, name }) => {
 
   const [coverArticle, setcoverArticle] = useState(null);
   const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
-
-  const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
-  const [content, setContent] = useState("");
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link"],
-      [{ align: [] }],
-      [{ color: [] }],
-      ["code-block"],
-      ["clean"],
-    ],
-  };
-
-  const quillFormats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "link",
-    "image",
-    "align",
-    "color",
-    "code-block",
-  ];
 
   const uploadArticleCover = async (file) => {
     try {
@@ -283,7 +286,7 @@ const FormCreatePost = ({ email, name }) => {
       if (urlCoverArticle !== null) {
         console.log(...formData);
         let article_cover = urlCoverArticle;
-        let content = "blabl";
+        let content = conteArticle;
         mutate({
           title,
           read_time_minutes,
@@ -338,6 +341,14 @@ const FormCreatePost = ({ email, name }) => {
             formats={quillFormats}
             className="w-full h-[70%] mt-10 bg-white"
           /> */}
+          <ReactQuill
+            ref={quillRef}
+            value={conteArticle}
+            modules={modules}
+            formats={formats}
+            onChange={handleChangeRichEditor}
+          />
+
           <ButtonSubmitForm text={"Publier "} isAwaiting={awaitingBtnSubmit} />
         </form>
       </section>
