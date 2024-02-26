@@ -15,8 +15,15 @@ import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useGetCategories } from "@/hooks/useCategorie";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
+import { useMutation } from "react-query";
+import axios from "axios";
 
 const SectionUploadCover = ({ setCover }) => {
   const fileInputRef = useRef(null);
@@ -161,7 +168,45 @@ const SectionUploadCover = ({ setCover }) => {
 
 const FormCreatePost = ({ email, name }) => {
   const { data: categories, isFetching } = useGetCategories();
+  const [refFileUpload, setRefFileUpload] = useState(null);
+  const { mutate } = useMutation(
+    (newArticle) => axios.post("/api/articles", newArticle),
+    {
+      onSuccess: (response) => {
+        if (response.status) {
+          const { data } = response;
+          console.log("data ok", data);
+          toast.success(
+            "Félicitations ! Votre article a été créé avec succès."
+          );
+        }
+        setawaitingBtnSubmit(false);
+        setRefFileUpload(null);
+      },
+      onError: async (error) => {
+        console.log("data error ", error);
+
+        try {
+          await deleteObject(refFileUpload);
+          console.log("Uploaded image deleted successfully.");
+          toast.error(
+            "Nous sommes désolés, mais il semble y avoir eu un problème lors de la tentative de création de votre article sur le blog. Veuillez nous excuser pour ce désagrément. "
+          );
+          setawaitingBtnSubmit(false);
+        } catch (deleteError) {
+          console.error("Error deleting uploaded image: ", deleteError);
+          toast.error(
+            "Nous sommes désolés, mais il semble y avoir eu un problème lors de la tentative de création de votre article sur le blog. Veuillez nous excuser pour ce désagrément. "
+          );
+          setawaitingBtnSubmit(false);
+          // Handle any errors during image deletion (optional)
+        }
+      },
+    }
+  );
+
   const [coverArticle, setcoverArticle] = useState(null);
+  const [awaitingBtnSubmit, setawaitingBtnSubmit] = useState(false);
 
   const QuillEditor = dynamic(() => import("react-quill"), { ssr: false });
   const [content, setContent] = useState("");
@@ -194,10 +239,6 @@ const FormCreatePost = ({ email, name }) => {
     "code-block",
   ];
 
-  const handleEditorChange = (newContent) => {
-    //setContent(newContent);
-  };
-
   const uploadArticleCover = async (file) => {
     try {
       function generateUniqueCoverPhotoName() {
@@ -213,6 +254,7 @@ const FormCreatePost = ({ email, name }) => {
         let filename = generateUniqueCoverPhotoName();
 
         const storageRef = ref(storage, `articles/${filename}`);
+        setRefFileUpload(storageRef);
         const snapshot = await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(snapshot.ref);
 
@@ -227,17 +269,31 @@ const FormCreatePost = ({ email, name }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setawaitingBtnSubmit(true);
     let form = e.target;
     let formData = new FormData(form);
     let title = formData.get("title");
-    let readTimeMinutes = formData.get("read_time_minutes");
-    let categoryId = parseInt(formData.get("category_id"));
-    if (categoryId < 1) {
+    let read_time_minutes = parseInt(formData.get("read_time_minutes"));
+    let category_id = parseInt(formData.get("category_id"));
+    if (category_id < 1) {
       toast.warn("Veuillez choisir une catégorie");
+      setawaitingBtnSubmit(false);
     } else {
       const urlCoverArticle = await uploadArticleCover(coverArticle);
       if (urlCoverArticle !== null) {
         console.log(...formData);
+        let article_cover = urlCoverArticle;
+        let content = "blabl";
+        mutate({
+          title,
+          read_time_minutes,
+          category_id,
+          article_cover,
+          content,
+          email,
+        });
+      } else {
+        setawaitingBtnSubmit(false);
       }
     }
   };
@@ -276,14 +332,13 @@ const FormCreatePost = ({ email, name }) => {
             placeholder="Estimation temps de lecture... Ex: 5 MIN"
             required
           />
-          <QuillEditor
+          {/* <QuillEditor
             value={content}
-            onChange={handleEditorChange}
             modules={quillModules}
             formats={quillFormats}
             className="w-full h-[70%] mt-10 bg-white"
-          />
-          <ButtonSubmitForm text={"Publier "} />
+          /> */}
+          <ButtonSubmitForm text={"Publier "} isAwaiting={awaitingBtnSubmit} />
         </form>
       </section>
       <ToastContainer
