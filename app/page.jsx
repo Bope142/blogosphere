@@ -13,23 +13,10 @@ import TitleSection from "@/components/titleSection/TitleSection";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { useSession } from "next-auth/react";
 import { useGetCategories } from "@/hooks/useCategorie";
-const categories = [
-  { title: "Technologie et Innovation", cover: "/images/tech_cover.png" },
-  { title: "Voyage et Aventure", cover: "/images/voyage.jpg" },
-  { title: "Cuisine et Gastronomie", cover: "/images/Cuisine.jpg" },
-  { title: "Art et Culture", cover: "/images/Art.jpg" },
-  { title: "Santé et Bien-être", cover: "/images/Sante.jpg" },
-  { title: "Mode et Beauté", cover: "/images/Mode.jpg" },
-  { title: "Finance et Investissement", cover: "/images/Finance.jpg" },
-  {
-    title: "Environnement et Durabilité",
-    cover: "/images/Environnement.jpg",
-  },
-  { title: "Parentalité et Éducation", cover: "/images/Education.jpg" },
-  { title: "Science et Nature", cover: "/images/Science.jpg" },
-  { title: "Sports et Fitness", cover: "/images/Sports.jpg" },
-  { title: "Actualités et Politique", cover: "/images/Politique.jpg" },
-];
+import { useGetLastPost } from "@/hooks/useArticles";
+import { Chela_One } from "next/font/google";
+import { formatDateTime } from "@/utils/date";
+
 const CategoriePostSection = () => {
   const { data: categories, isFetching } = useGetCategories();
 
@@ -56,110 +43,33 @@ const CategoriePostSection = () => {
 };
 
 const BestPostSection = () => {
-  const posts = [
-    {
-      category: "Technologie et Innovation",
-      title: "Les dernières avancées en intelligence artificielle",
-      cover: "/images/tech_cover.png",
-      duration: "5 min",
-      postLink: "/article1",
-      date: "2024-02-15",
-    },
-    {
-      category: "Voyage et Aventure",
-      title: "Explorer les merveilles cachées de l'Amérique du Sud",
-      cover: "/images/voyage.jpg",
-      duration: "7 min",
-      postLink: "/article2",
-      date: "2024-02-14",
-    },
-    {
-      category: "Cuisine et Gastronomie",
-      title:
-        "Recettes traditionnelles de cuisine française à essayer à la maison",
-      cover: "/images/Cuisine.jpg",
-      duration: "10 min",
-      postLink: "/article3",
-      date: "2024-02-13",
-    },
-    {
-      category: "Art et Culture",
-      title: "Analyse de l'impact de la Renaissance sur l'art moderne",
-      cover: "/images/Art.jpg",
-      duration: "6 min",
-      postLink: "/article4",
-      date: "2024-02-12",
-    },
-    {
-      category: "Santé et Bien-être",
-      title: "Les bienfaits du yoga pour la santé mentale et physique",
-      cover: "/images/Sante.jpg",
-      duration: "8 min",
-      postLink: "/article5",
-      date: "2024-02-11",
-    },
-    {
-      category: "Mode et Beauté",
-      title: "Les tendances de la mode printemps-été à adopter cette année",
-      cover: "/images/Mode.jpg",
-      duration: "9 min",
-      postLink: "/article6",
-      date: "2024-02-10",
-    },
-    {
-      category: "Finance et Investissement",
-      title: "Comment commencer à investir en bourse avec succès",
-      cover: "/images/Finance.jpg",
-      duration: "5 min",
-      postLink: "/article7",
-      date: "2024-02-09",
-    },
-    {
-      category: "Environnement et Durabilité",
-      title:
-        "Les initiatives pour sauver notre planète et lutter contre le changement climatique",
-      cover: "/images/Environnement.jpg",
-      duration: "7 min",
-      postLink: "/article8",
-      date: "2024-02-08",
-    },
-    {
-      category: "Parentalité et Éducation",
-      title: "Naviguer à travers les défis de la parentalité moderne",
-      cover: "/images/Education.jpg",
-      duration: "12 min",
-      postLink: "/article9",
-      date: "2024-02-07",
-    },
-    {
-      category: "Science et Nature",
-      title: "Les découvertes scientifiques les plus fascinantes de l'année",
-      cover: "/images/Science.jpg",
-      duration: "8 min",
-      postLink: "/article10",
-      date: "2024-02-06",
-    },
-    {
-      category: "Sports et Fitness",
-      title:
-        "Les meilleures techniques d'entraînement pour améliorer vos performances sportives",
-      cover: "/images/Sports.jpg",
-      duration: "6 min",
-      postLink: "/article11",
-      date: "2024-02-05",
-    },
-    {
-      category: "Actualités et Politique",
-      title:
-        "Analyse des enjeux politiques mondiaux et de leur impact sur la société",
-      cover: "/images/Politique.jpg",
-      duration: "7 min",
-      postLink: "/article12",
-      date: "2024-02-04",
-    },
-  ];
-
-  return (
+  const { data: posts, isFetching } = useGetLastPost();
+  console.log(posts);
+  const display = isFetching ? (
+    <section className="section_page content__best__post" id="recents__post">
+      <TitleSection
+        title={"nos derniers contenus"}
+        colorClass={"black"}
+        overview={
+          "Explorez une gamme diversifiée d'articles frais, offrant des perspectives uniques sur des sujets variés"
+        }
+      />
+      <div className="post__best">
+        {[...Array(8)].map((_, index) => (
+          <CardPostSimple
+            key={index}
+            title={""}
+            category={""}
+            cover={""}
+            duration={""}
+            postLink={""}
+            datePost={""}
+            isLoading={true}
+          />
+        ))}
+      </div>
+    </section>
+  ) : (
     <section className="section_page content__best__post" id="recents__post">
       <TitleSection
         title={"nos derniers contenus"}
@@ -171,30 +81,46 @@ const BestPostSection = () => {
       <div className="post__best">
         {posts.map((post, index) => (
           <CardPostSimple
-            key={index}
+            key={post.article_id}
             title={post.title}
-            category={post.category}
-            cover={post.cover}
-            duration={post.duration}
-            postLink={post.postLink}
-            datePost={post.date}
+            category={post.categories.name_categorie}
+            cover={post.article_cover}
+            duration={post.read_time_minutes}
+            postLink={`/articles/${post.article_id}`}
+            datePost={formatDateTime(post.date_created)}
+            isLoading={false}
           />
         ))}
       </div>
     </section>
   );
+  return display;
 };
 
 const SectionCategory = () => {
-  return (
+  const { data: categories, isLoading } = useGetCategories();
+  const display = isLoading ? (
+    "..."
+  ) : (
     <div className="categories__post marquee">
       <div className="marquee-content">
         {categories.map((category, index) => (
-          <span key={index}>{category.title} - </span>
+          <span key={index}>{category.name_categorie} - </span>
         ))}
       </div>
     </div>
   );
+
+  // {categories.map((category, index) => (
+  //   <CardCategory
+  //     key={index}
+  //     title={category.name_categorie}
+  //     cover={category.coverPath}
+  //     id={category.category_id}
+  //     loading={false}
+  //   />
+  // ))}
+  return display;
 };
 
 const SectionRandomNewsFirstCategory = () => {

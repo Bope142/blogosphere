@@ -16,6 +16,7 @@ model articles {
   category_id       Int?
   date_created      DateTime?   @default(now()) @db.Timestamp(0)
   date_modified     DateTime?   @default(now()) @db.Timestamp(0)
+  article_cover     String      @db.Text
   users             users?      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Articles_ibfk_1")
   categories        categories? @relation(fields: [category_id], references: [category_id], onDelete: Cascade, map: "Articles_ibfk_2")
   comments          comments[]

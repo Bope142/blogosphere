@@ -12,6 +12,7 @@ import { AiOutlineLinkedin } from "react-icons/ai";
 import { FaGithub } from "react-icons/fa";
 import { AiFillLike } from "react-icons/ai";
 import { FaCommentAlt } from "react-icons/fa";
+import { formatDateTime } from "@/utils/date";
 function CardCategory({ id, title, cover, loading }) {
   if (loading) {
     return (
@@ -53,8 +54,13 @@ const CardPostSimple = ({
   duration,
   postLink,
   datePost,
+  isLoading,
 }) => {
-  return (
+  return isLoading ? (
+    <div className="card card__post_simple card-post-loading">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <Link className="card card__post_simple" href={postLink}>
       <div className="cover">
         <Image
@@ -67,7 +73,7 @@ const CardPostSimple = ({
       <div className="details">
         <div className="details-lecture">
           <div className="cat">{category}</div>
-          <p className="duration">{duration}</p>
+          <p className="duration">{duration} Min</p>
         </div>
         <p className="title__post">{title}</p>
         <p className="post__date">{datePost}</p>
@@ -215,8 +221,15 @@ const CardPostDetails = ({
   comment,
   postText,
   postDuration,
+  postDateTime,
+  isLoading,
+  likeEventHandler,
 }) => {
-  return (
+  const display = isLoading ? (
+    <div className="post__card detail-post-loading">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <div className="post__card">
       <div className="details__post">
         <div className="post__category">
@@ -224,6 +237,9 @@ const CardPostDetails = ({
         </div>
         <div className="post__duration">
           <p> {postDuration} Min</p>
+        </div>
+        <div className="post__duration">
+          <p> {formatDateTime(postDateTime)}</p>
         </div>
       </div>
       <div className="cover">
@@ -249,7 +265,12 @@ const CardPostDetails = ({
           <p className="name__auth">{nameAuthor}</p>
         </div>
         <div className="actions__posts">
-          <button className="btn like__post">
+          <button
+            className="btn like__post"
+            onClick={() => {
+              likeEventHandler();
+            }}
+          >
             {like} <AiFillLike />
           </button>
           <button className="btn comment__post">
@@ -257,9 +278,13 @@ const CardPostDetails = ({
           </button>
         </div>
       </div>
-      <div className="content__post__text">{postText}</div>
+      <div
+        className="content__post__text"
+        dangerouslySetInnerHTML={{ __html: postText }}
+      ></div>
     </div>
   );
+  return display;
 };
 
 const CardComment = ({ username, date, comments, profilUser }) => {

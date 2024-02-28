@@ -34,7 +34,7 @@ const ButtonSimple = ({ text, isAwaiting, eventHandler, isEnable }) => {
       className={`btn btn-link btn-clic-effect ${
         isAwaiting && "btn-awaiting "
       } ${!isEnable && "enable-btn "}`}
-      onClick={() => eventHandler}
+      onClick={eventHandler}
     >
       {isAwaiting ? <div className="loader-btn"></div> : text}
     </button>

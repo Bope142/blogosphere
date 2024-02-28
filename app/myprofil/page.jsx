@@ -5,7 +5,11 @@ import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { ButtonDefault, ButtonSimple } from "@/components/buttons/Buttons";
+import {
+  ButtonDefault,
+  ButtonSimple,
+  ButtonSimpleLink,
+} from "@/components/buttons/Buttons";
 import { MemoForm } from "@/components/FormControll/FormControll";
 import { AiOutlineYoutube } from "react-icons/ai";
 import { FaSquareFacebook } from "react-icons/fa6";
@@ -50,10 +54,9 @@ const Profil = ({ image, name }) => {
             isAwaiting={false}
             isEnable={true}
           />
-          <ButtonSimple
+          <ButtonSimpleLink
             text={"Pubiler un nouveau article"}
-            isAwaiting={false}
-            isEnable={true}
+            path={"articles/create"}
           />
         </div>
       </div>

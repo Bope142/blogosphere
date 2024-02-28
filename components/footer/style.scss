@@ -2,12 +2,13 @@
 @import "../../public/style/variable.scss";
 
 .footer {
-  margin-top: auto;
+  margin-top: 0;
   background: black;
   display: flex;
   flex-direction: column;
   row-gap: 25px;
   padding-bottom: 85px !important;
+  bottom: 0;
 }
 
 .copyMention {
