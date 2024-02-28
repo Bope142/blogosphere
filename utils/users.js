@@ -28,3 +28,25 @@ export const getUserIdBasedOnEmail = async (email) => {
     await prisma.$disconnect();
   }
 };
+
+export const updateOverviewUser = async (userId, overview) => {
+  try {
+    if (!userId || !overview) return null;
+    const newOverview = await prisma.users.update({
+      where: { user_id: userId },
+      data: {
+        overview,
+      },
+      select: {
+        overview: true,
+      },
+    });
+    console.log(newOverview);
+    return newOverview !== null ? newOverview : null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+};

@@ -38,7 +38,14 @@ export const InputForm = ({
   );
 };
 
-export const MemoForm = ({ placeholder, labelText, name, defaultValue }) => {
+export const MemoForm = ({
+  placeholder,
+  labelText,
+  name,
+  defaultValue,
+  handleSetRemoteValue,
+}) => {
+  const [value, setvalue] = useState(defaultValue);
   return (
     <div className="input__form_container">
       <label htmlFor={name}>{labelText}</label>
@@ -48,7 +55,11 @@ export const MemoForm = ({ placeholder, labelText, name, defaultValue }) => {
         placeholder={placeholder}
         cols="30"
         rows="10"
-        value={defaultValue}
+        value={value}
+        onChange={(e) => {
+          setvalue(e.target.value);
+          handleSetRemoteValue(e.target.value);
+        }}
       ></textarea>
     </div>
   );

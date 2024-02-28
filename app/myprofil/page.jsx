@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense, useState } from "react";
 import "../../public/style/main.scss";
 import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
@@ -19,6 +19,10 @@ import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { CardPostSimple } from "@/components/cards/Cards";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const UserProfil = ({ image, name }) => {
   if (image === null) {
     return <p>{name.substring(0, 2).toUpperCase()}</p>;
@@ -126,6 +130,34 @@ const UserSocialMediaAccount = () => {
 };
 
 const BioUserProfil = ({ overview }) => {
+  const [memoValue, setmemoValue] = useState("");
+  const [awaitBtnSave, setAwaitBtnSave] = useState(false);
+  const { mutate: updateOverview } = useMutation(
+    (newOverview) => axios.put("/api/users/overview", newOverview),
+    {
+      onSuccess: async (response) => {
+        setAwaitBtnSave(false);
+        setmemoValue(response.data.overview);
+      },
+      onError: (error) => {
+        setAwaitBtnSave(false);
+        console.error(error);
+        toast.error(
+          "Échec de la modification de la déscription de votre profil. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+  const handleChangeBioUser = () => {
+    if (memoValue === "") {
+      toast.warn("Veuillez remplir la description de votre profil.");
+    } else {
+      setAwaitBtnSave(true);
+      updateOverview({
+        overview: memoValue,
+      });
+    }
+  };
   return (
     <div className="container__bio">
       <MemoForm
@@ -133,8 +165,14 @@ const BioUserProfil = ({ overview }) => {
         labelText={"Votre Bio de profil"}
         name={"msg"}
         defaultValue={overview === null ? "Aucune description " : overview}
+        handleSetRemoteValue={setmemoValue}
       />
-      <ButtonSimple text={"Enregistrer"} isAwaiting={false} isEnable={true} />
+      <ButtonSimple
+        text={"Enregistrer"}
+        isAwaiting={awaitBtnSave}
+        isEnable={!awaitBtnSave}
+        eventHandler={handleChangeBioUser}
+      />
     </div>
   );
 };
@@ -288,10 +326,30 @@ function MyProfilPage() {
   } else if (status === "authenticated") {
     const { image, name, overview } = session.user;
     return (
-      <main className="page__content">
-        <MyProfil name={name} image={image} overview={overview} />
-        <SectionPostAuthor />
-      </main>
+      <Suspense
+        fallback={
+          <main className="page__content">
+            <LoaderPage />
+          </main>
+        }
+      >
+        <main className="page__content">
+          <MyProfil name={name} image={image} overview={overview} />
+          <SectionPostAuthor />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </main>
+      </Suspense>
     );
   } else {
     router.push("/login");
