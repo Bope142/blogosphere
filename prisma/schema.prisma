@@ -2,13 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL_DEV")
 }
 
-model Articles {
+model articles {
   article_id        Int         @id @default(autoincrement())
   title             String      @db.VarChar(255)
   content           String      @db.Text
@@ -17,74 +16,76 @@ model Articles {
   category_id       Int?
   date_created      DateTime?   @default(now()) @db.Timestamp(0)
   date_modified     DateTime?   @default(now()) @db.Timestamp(0)
-  Users             Users?      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Articles_ibfk_1")
-  Categories        Categories? @relation(fields: [category_id], references: [category_id], onDelete: Cascade, map: "Articles_ibfk_2")
-  Comments          Comments[]
-  Likes             Likes[]
+  article_cover     String      @db.Text
+  users             users?      @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Articles_ibfk_1")
+  categories        categories? @relation(fields: [category_id], references: [category_id], onDelete: Cascade, map: "Articles_ibfk_2")
+  comments          comments[]
+  likes             likes[]
 
   @@index([category_id], map: "category_id")
   @@index([user_id], map: "user_id")
 }
 
-model Categories {
+model categories {
   category_id    Int        @id @default(autoincrement())
   name_categorie String     @unique(map: "name_categorie") @db.VarChar(255)
-  Articles       Articles[]
+  coverPath      String     @db.Text
+  articles       articles[]
 }
 
-model Comments {
+model comments {
   comment_id   Int       @id @default(autoincrement())
   user_id      Int?
   article_id   Int?
   content      String    @db.Text
   date_created DateTime? @default(now()) @db.Timestamp(0)
-  Users        Users?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Comments_ibfk_1")
-  Articles     Articles? @relation(fields: [article_id], references: [article_id], onDelete: Cascade, map: "Comments_ibfk_2")
+  users        users?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Comments_ibfk_1")
+  articles     articles? @relation(fields: [article_id], references: [article_id], onDelete: Cascade, map: "Comments_ibfk_2")
 
   @@index([article_id], map: "article_id")
   @@index([user_id], map: "user_id")
 }
 
-model Follows {
+model follows {
   follow_id                         Int    @id @default(autoincrement())
   follower_id                       Int?
   following_id                      Int?
-  Users_Follows_follower_idToUsers  Users? @relation("Follows_follower_idToUsers", fields: [follower_id], references: [user_id], onDelete: Cascade, map: "Follows_ibfk_1")
-  Users_Follows_following_idToUsers Users? @relation("Follows_following_idToUsers", fields: [following_id], references: [user_id], onDelete: Cascade, map: "Follows_ibfk_2")
+  users_follows_follower_idTousers  users? @relation("follows_follower_idTousers", fields: [follower_id], references: [user_id], onDelete: Cascade, map: "Follows_ibfk_1")
+  users_follows_following_idTousers users? @relation("follows_following_idTousers", fields: [following_id], references: [user_id], onDelete: Cascade, map: "Follows_ibfk_2")
 
   @@index([follower_id], map: "follower_id")
   @@index([following_id], map: "following_id")
 }
 
-model Likes {
+model likes {
   like_id    Int       @id @default(autoincrement())
   user_id    Int?
   article_id Int?
-  Users      Users?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Likes_ibfk_1")
-  Articles   Articles? @relation(fields: [article_id], references: [article_id], onDelete: Cascade, map: "Likes_ibfk_2")
+  users      users?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "Likes_ibfk_1")
+  articles   articles? @relation(fields: [article_id], references: [article_id], onDelete: Cascade, map: "Likes_ibfk_2")
 
   @@index([article_id], map: "article_id")
   @@index([user_id], map: "user_id")
 }
 
-model Users {
+model users {
   user_id                             Int             @id @default(autoincrement())
   username                            String          @unique(map: "username") @db.VarChar(255)
   email                               String?         @unique(map: "email") @db.VarChar(255)
   password_hash                       String?         @db.VarChar(255)
   google_id                           String?         @unique(map: "google_id") @db.VarChar(255)
   profile_picture                     String?         @db.VarChar(255)
-  role_user                           Users_role_user
+  role_user                           users_role_user
   overview                            String?         @db.Text
   date_registered                     DateTime?       @default(now()) @db.Timestamp(0)
-  Articles                            Articles[]
-  Comments                            Comments[]
-  Follows_Follows_follower_idToUsers  Follows[]       @relation("Follows_follower_idToUsers")
-  Follows_Follows_following_idToUsers Follows[]       @relation("Follows_following_idToUsers")
-  Likes                               Likes[]
+  articles                            articles[]
+  comments                            comments[]
+  follows_follows_follower_idTousers  follows[]       @relation("follows_follower_idTousers")
+  follows_follows_following_idTousers follows[]       @relation("follows_following_idTousers")
+  likes                               likes[]
 }
 
-enum Users_role_user {
+enum users_role_user {
   simple_user @map("simple user")
   admin
   root

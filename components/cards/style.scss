@@ -12,6 +12,7 @@
   font-family: $fontManropeMedium;
   color: white;
   font-size: 0.9rem;
+  overflow: hidden;
 }
 .card__categories {
   align-self: flex-start;
@@ -651,4 +652,30 @@
     font-family: $fontManropeLight;
     font-size: 0.9rem;
   }
+}
+
+.skeleton__loader {
+  border-radius: 0.8rem;
+  height: 100%;
+  width: 100%;
+  background-color: rgba($colorPrimaryBase, 0.2);
+  animation: loadingAnimation 1s infinite alternate;
+}
+
+@keyframes loadingAnimation {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.detail-post-loading {
+  display: flex;
+  height: 500px;
+}
+.card-post-loading {
+  display: flex;
+  height: 320px;
 }

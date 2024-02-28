@@ -1,0 +1,25 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.container__not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 25px;
+  height: 100%;
+  & .content-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    flex: none;
+  }
+
+  & p {
+    font-family: $fontManropeExtraLight;
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 2rem;
+  }
+}
