@@ -50,7 +50,7 @@ const getOnePost = async (postId) => {
 
 export const useGetOnetPost = (postId) => {
   return useQuery({
-    queryKey: ["onePost"],
+    queryKey: ["onePost", postId],
 
     queryFn: () => getOnePost(postId),
   });

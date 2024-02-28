@@ -46,7 +46,29 @@ const BestPostSection = () => {
   const { data: posts, isFetching } = useGetLastPost();
   console.log(posts);
   const display = isFetching ? (
-    "Loading..."
+    <section className="section_page content__best__post" id="recents__post">
+      <TitleSection
+        title={"nos derniers contenus"}
+        colorClass={"black"}
+        overview={
+          "Explorez une gamme diversifiée d'articles frais, offrant des perspectives uniques sur des sujets variés"
+        }
+      />
+      <div className="post__best">
+        {[...Array(8)].map((_, index) => (
+          <CardPostSimple
+            key={index}
+            title={""}
+            category={""}
+            cover={""}
+            duration={""}
+            postLink={""}
+            datePost={""}
+            isLoading={true}
+          />
+        ))}
+      </div>
+    </section>
   ) : (
     <section className="section_page content__best__post" id="recents__post">
       <TitleSection
@@ -66,6 +88,7 @@ const BestPostSection = () => {
             duration={post.read_time_minutes}
             postLink={`/articles/${post.article_id}`}
             datePost={formatDateTime(post.date_created)}
+            isLoading={false}
           />
         ))}
       </div>

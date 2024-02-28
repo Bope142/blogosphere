@@ -60,9 +60,25 @@ export const getOnePost = async (postId) => {
           },
         },
         comments: {
-          include: {
-            users: true,
+          select: {
+            content: true,
+            date_created: true,
+            comment_id: true,
+            users: {
+              select: {
+                profile_picture: true,
+                username: true,
+              },
+            },
           },
+          // include: {
+          //   users: {
+          //     select: {
+          //       profile_picture: true,
+          //       username: true,
+          //     },
+          //   },
+          // },
         },
         likes: true,
         users: {

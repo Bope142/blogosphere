@@ -4,13 +4,10 @@ import { NextResponse } from "next/server";
 
 export const GET = async (req, { params }) => {
   try {
-    console.log("param", params);
     const { id } = params;
 
     if (id !== undefined) {
       const post = await getOnePost(parseInt(id));
-
-      console.log(post);
       return NextResponse.json(post, {
         status: 200,
       });

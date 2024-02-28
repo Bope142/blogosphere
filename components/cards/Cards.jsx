@@ -54,8 +54,13 @@ const CardPostSimple = ({
   duration,
   postLink,
   datePost,
+  isLoading,
 }) => {
-  return (
+  return isLoading ? (
+    <div className="card card__post_simple card-post-loading">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <Link className="card card__post_simple" href={postLink}>
       <div className="cover">
         <Image

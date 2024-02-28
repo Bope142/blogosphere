@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import "./style.scss";
 import { useRouter } from "next/navigation";
@@ -13,24 +13,33 @@ import TitleSection from "@/components/titleSection/TitleSection";
 import Image from "next/image";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { useGetOnetPost } from "@/hooks/useArticles";
-import { ButtonSimpleLink } from "@/components/buttons/Buttons";
+import {
+  ButtonSimple,
+  ButtonSimpleLink,
+  ButtonSubmitForm,
+} from "@/components/buttons/Buttons";
+import { useMutation, useQueryClient } from "react-query";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { formatDateTime } from "@/utils/date";
 
-const post = `Before diving into the complexities, it's crucial to acquaint yourself with the building blocks of the language. Begin with greetings, basic phrases, and essential vocabulary. Platforms like Duolingo, Babbel, or Rosetta Stone offer engaging exercises that make learning these fundamentals enjoyable.
-
-Grammar might seem daunting, but fear not! Understanding basic sentence structures, verb conjugations, and noun genders lays a sturdy foundation. Online resources, textbooks, and YouTube tutorials are fantastic aids for grasping grammar intricacies.
-
-Immerse yourself in the language by listening to podcasts, watching Spanish shows or movies, and engaging in conversation with native speakers if possible. Practice speaking aloud, even if it's just to yourself; it helps to solidify pronunciation and confidence.
-
-‍
-
-Progressing Beyond the Basics
-Pick up beginner-level books, articles, or children's stories in Spanish. Reading exposes you to new words, sentence structures, and cultural nuances. Don't fret about understanding every word; context is your friend.
-
-Start simple—keep a journal, write short paragraphs, or participate in language exchange forums online. Writing regularly enhances your grasp of grammar and vocabulary while allowing you to express yourself creatively.
-
-Delve into Spanish culture through music, cuisine, art, and traditions. Explore Spanish-speaking countries virtually or in person, if feasible. Understanding cultural nuances adds depth and authenticity to your language learning journey.`;
-const SectionPost = ({ post }) => {
-  return (
+const SectionPost = ({ post, isLoading }) => {
+  return isLoading ? (
+    <CardPostDetails
+      postCover={""}
+      postTitle={""}
+      postCategory={""}
+      profilAuthor={""}
+      nameAuthor={""}
+      like={""}
+      comment={""}
+      postText={""}
+      postDuration={""}
+      postDateTime={""}
+      isLoading={isLoading}
+    />
+  ) : (
     <CardPostDetails
       postCover={post.article_cover}
       postTitle={post.title}
@@ -42,13 +51,52 @@ const SectionPost = ({ post }) => {
       postText={post.content}
       postDuration={post.read_time_minutes}
       postDateTime={post.date_created}
+      isLoading={isLoading}
     />
   );
 };
 
-const SectionAddComment = ({ imageAuthor }) => {
+const SectionAddComment = ({ imageAuthor, postId }) => {
+  const [awaitBtnComment, setAwaitBtnComment] = useState(false);
+  const queryClient = useQueryClient();
+  const editorCommentRef = useRef(null);
+  const { mutate: addComment } = useMutation(
+    (newComment) => axios.post("/api/articles/comments", newComment),
+    {
+      onSuccess: async (response) => {
+        queryClient.invalidateQueries("onePost", postId);
+        setAwaitBtnComment(false);
+        console.log(response);
+        toast.success(
+          "Félicitations ! Votre commentaire a été créé avec succès."
+        );
+        editorCommentRef.current.value = "";
+      },
+      onError: (error) => {
+        setAwaitBtnComment(false);
+        console.error(error);
+        toast.error(
+          "Échec de la création du commentaire. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAwaitBtnComment(true);
+    let form = e.target;
+    let formData = new FormData(form);
+    let content = formData.get("content");
+    let article_id = postId;
+    let date_created = new Date();
+    addComment({
+      content,
+      article_id,
+      date_created,
+    });
+  };
   return (
-    <div className="add__comment">
+    <form className="add__comment" onSubmit={handleSubmit}>
       <div className="profil__user">
         <Image
           src={imageAuthor}
@@ -58,29 +106,36 @@ const SectionAddComment = ({ imageAuthor }) => {
         />
       </div>
       <textarea
-        name=""
-        id=""
+        name="content"
+        id="content"
         cols="30"
         rows="10"
         placeholder="Votre commentaire ici"
+        required
+        ref={editorCommentRef}
       ></textarea>
-      <button className="btn btn-submit-comment btn-link btn-clic-effect">
-        Commenter
-      </button>
-    </div>
+      {/* <ButtonSimple text={"Commenter"} isAwaiting={false} isEnable={true} /> */}
+      <ButtonSubmitForm text={"Commenter"} isAwaiting={awaitBtnComment} />
+    </form>
   );
 };
 
-const SectionContentComments = ({ comments }) => {
-  return (
+const SectionContentComments = ({ comments, isLoading }) => {
+  console.log(comments);
+
+  return isLoading ? (
+    <div className="container__list__comment__post loading_section_comment">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <div className="container__list__comment__post">
-      {comments.map((comment, index) => (
+      {comments.map((comment) => (
         <CardComment
-          key={index}
-          username={"Nora Bope"}
+          key={comment.comment_id}
+          username={comment.users.username}
           date={formatDateTime(comment.date_created)}
           comments={comment.content}
-          profilUser={"/images/tech_cover.png"}
+          profilUser={comment.users.profile_picture}
         />
       ))}
     </div>
@@ -89,13 +144,16 @@ const SectionContentComments = ({ comments }) => {
 
 const Container = ({ postId, imageAuthor }) => {
   const { data: post, isLoading } = useGetOnetPost(postId);
-  console.log(post);
+
   const display = isLoading ? (
-    "Fetched"
+    <>
+      <SectionPost post={post} isLoading={true} />
+      <SectionContentComments comments={post} isLoading={true} />
+    </>
   ) : (
     <>
-      <SectionPost post={post} />
-      <SectionAddComment imageAuthor={imageAuthor} />
+      <SectionPost post={post} isLoading={false} />
+      <SectionAddComment imageAuthor={imageAuthor} postId={postId} />
       <SectionContentComments comments={post.comments} />
     </>
   );
@@ -104,13 +162,15 @@ const Container = ({ postId, imageAuthor }) => {
 
 const ContainerNoSession = ({ postId }) => {
   const { data: post, isLoading } = useGetOnetPost(postId);
-  console.log(post);
   const display = isLoading ? (
-    "Fetched"
+    <>
+      <SectionPost post={post} isLoading={true} />
+      <SectionContentComments comments={post} isLoading={true} />
+    </>
   ) : (
     <>
-      <SectionPost post={post} />
-      <SectionContentComments comments={post.comments} />
+      <SectionPost post={post} isLoading={false} />
+      <SectionContentComments comments={post.comments} isLoading={false} />
       <div className="no-connected">
         <p>
           Pour pouvoir aimer ou commenter cette publication, veuillez vous
@@ -151,6 +211,18 @@ function PostDetailPage({ params }) {
               imageAuthor={image}
               nameAuthor={name}
             />
+            <ToastContainer
+              position="bottom-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
           </section>
         </main>
       </Suspense>
@@ -168,6 +240,18 @@ function PostDetailPage({ params }) {
           <section className="section_page post_details__page">
             <ContainerNoSession postId={postId} />
           </section>
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </main>
       </Suspense>
     );
