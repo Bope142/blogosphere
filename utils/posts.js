@@ -71,16 +71,12 @@ export const getOnePost = async (postId) => {
               },
             },
           },
-          // include: {
-          //   users: {
-          //     select: {
-          //       profile_picture: true,
-          //       username: true,
-          //     },
-          //   },
-          // },
         },
-        likes: true,
+        likes: {
+          select: {
+            like_id: true,
+          },
+        },
         users: {
           select: {
             profile_picture: true,
@@ -112,7 +108,6 @@ export const deleteOnePost = async (idPost, authorEmail) => {
         user_id: idAuthor,
       },
     });
-    console.log(deletePost);
     return deletePost ? true : false;
   } catch (error) {
     console.log(error);

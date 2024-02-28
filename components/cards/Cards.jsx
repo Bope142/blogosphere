@@ -223,6 +223,7 @@ const CardPostDetails = ({
   postDuration,
   postDateTime,
   isLoading,
+  likeEventHandler,
 }) => {
   const display = isLoading ? (
     <div className="post__card detail-post-loading">
@@ -264,7 +265,12 @@ const CardPostDetails = ({
           <p className="name__auth">{nameAuthor}</p>
         </div>
         <div className="actions__posts">
-          <button className="btn like__post">
+          <button
+            className="btn like__post"
+            onClick={() => {
+              likeEventHandler();
+            }}
+          >
             {like} <AiFillLike />
           </button>
           <button className="btn comment__post">

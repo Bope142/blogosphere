@@ -24,7 +24,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDateTime } from "@/utils/date";
 
-const SectionPost = ({ post, isLoading }) => {
+const SectionPost = ({ postId, post, isLoading }) => {
+  const queryClient = useQueryClient();
+  const { mutate: likePost } = useMutation(
+    (newLike) => axios.post("/api/articles/likes", newLike),
+    {
+      onSuccess: async (response) => {
+        queryClient.invalidateQueries("onePost", postId);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    }
+  );
+  const handleClickLike = () => {
+    likePost({
+      article_id: postId,
+    });
+  };
   return isLoading ? (
     <CardPostDetails
       postCover={""}
@@ -52,6 +69,7 @@ const SectionPost = ({ post, isLoading }) => {
       postDuration={post.read_time_minutes}
       postDateTime={post.date_created}
       isLoading={isLoading}
+      likeEventHandler={handleClickLike}
     />
   );
 };
@@ -66,7 +84,6 @@ const SectionAddComment = ({ imageAuthor, postId }) => {
       onSuccess: async (response) => {
         queryClient.invalidateQueries("onePost", postId);
         setAwaitBtnComment(false);
-        console.log(response);
         toast.success(
           "Félicitations ! Votre commentaire a été créé avec succès."
         );
@@ -121,8 +138,6 @@ const SectionAddComment = ({ imageAuthor, postId }) => {
 };
 
 const SectionContentComments = ({ comments, isLoading }) => {
-  console.log(comments);
-
   return isLoading ? (
     <div className="container__list__comment__post loading_section_comment">
       <div className="skeleton__loader"></div>
@@ -152,7 +167,7 @@ const Container = ({ postId, imageAuthor }) => {
     </>
   ) : (
     <>
-      <SectionPost post={post} isLoading={false} />
+      <SectionPost postId={postId} post={post} isLoading={false} />
       <SectionAddComment imageAuthor={imageAuthor} postId={postId} />
       <SectionContentComments comments={post.comments} />
     </>
@@ -185,8 +200,7 @@ const ContainerNoSession = ({ postId }) => {
 function PostDetailPage({ params }) {
   const { data: session, status } = useSession();
   const postId = parseInt(params.postId);
-  console.log(params);
-  const router = useRouter();
+
   if (status === "loading") {
     return (
       <main className="page__content">
@@ -194,7 +208,7 @@ function PostDetailPage({ params }) {
       </main>
     );
   } else if (status === "authenticated") {
-    const { image, name, overview, email } = session.user;
+    const { image, name, email } = session.user;
     return (
       <Suspense
         fallback={

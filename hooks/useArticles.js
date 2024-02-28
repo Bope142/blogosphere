@@ -39,7 +39,6 @@ export const useGetLastPost = () => {
 
 const getOnePost = async (postId) => {
   try {
-    console.log("ddd", postId);
     const { data } = await axios.get(`/api/articles/${postId}`);
     return data;
   } catch (error) {

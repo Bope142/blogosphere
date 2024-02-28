@@ -1,8 +1,8 @@
 import prisma from "@/lib/connect";
-import { addOneCommentOnPost } from "@/utils/comments";
-import { getUserIdBasedOnEmail } from "@/utils/users";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { likePost } from "@/utils/likes";
+import { getUserIdBasedOnEmail } from "@/utils/users";
 
 export const POST = async (req) => {
   try {
@@ -16,7 +16,6 @@ export const POST = async (req) => {
       );
     }
     const data = await req.json();
-
     if (!data)
       return NextResponse.json(
         { message: "data no provide" },
@@ -24,7 +23,7 @@ export const POST = async (req) => {
           status: 403,
         }
       );
-    const { article_id, content, date_created } = data;
+    const { article_id } = data;
     const userId = await getUserIdBasedOnEmail(session.user.email);
     if (!userId)
       return NextResponse.json(
@@ -34,22 +33,17 @@ export const POST = async (req) => {
         }
       );
 
-    const newComment = await addOneCommentOnPost(
-      userId,
-      article_id,
-      content,
-      date_created
-    );
-    if (newComment === null) {
+    const newLike = await likePost(userId, article_id);
+    if (newLike === null) {
       return NextResponse.json(
-        { message: "User not found" },
+        { message: "Error on add like" },
         {
-          status: 404,
+          status: 500,
         }
       );
     } else {
       return NextResponse.json(
-        { message: "Comment created with success" },
+        { message: "like added with success" },
         {
           status: 200,
         }

@@ -11,7 +11,6 @@ export const addOneCommentOnPost = async (userId, idPost, content, date) => {
         date_created: date,
       },
     });
-    console.log(newComment);
     return newComment ? true : false;
   } catch (error) {
     console.log(error);
