@@ -217,8 +217,13 @@ const CardPostDetails = ({
   postText,
   postDuration,
   postDateTime,
+  isLoading,
 }) => {
-  return (
+  const display = isLoading ? (
+    <div className="post__card detail-post-loading">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <div className="post__card">
       <div className="details__post">
         <div className="post__category">
@@ -268,6 +273,7 @@ const CardPostDetails = ({
       ></div>
     </div>
   );
+  return display;
 };
 
 const CardComment = ({ username, date, comments, profilUser }) => {

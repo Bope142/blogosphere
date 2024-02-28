@@ -22,12 +22,6 @@ export const GET = async (req, { params }) => {
         }
       );
     }
-    return NextResponse.json(
-      { message: "Params missing" },
-      {
-        status: 200,
-      }
-    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

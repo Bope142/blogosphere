@@ -1,4 +1,5 @@
 import prisma from "@/lib/connect";
+import { getUserIdBasedOnEmail } from "./users";
 
 export const getOnePostForAuthor = async (userId, postId) => {
   try {
@@ -75,6 +76,28 @@ export const getOnePost = async (postId) => {
     if (!post) return null;
     delete post.user_id;
     return post;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+export const deleteOnePost = async (idPost, authorEmail) => {
+  try {
+    if (!idPost || !authorEmail) return null;
+    const idAuthor = await getUserIdBasedOnEmail(authorEmail);
+    if (idAuthor === null) return null;
+
+    const deletePost = await prisma.articles.delete({
+      where: {
+        article_id: idPost,
+        user_id: idAuthor,
+      },
+    });
+    console.log(deletePost);
+    return deletePost ? true : false;
   } catch (error) {
     console.log(error);
     return null;

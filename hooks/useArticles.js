@@ -1,13 +1,9 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 
-const getOnePostForAuthor = async (authorEmail, postId) => {
+const getOnePostForAuthor = async (postId) => {
   try {
-    console.log("getOnePostForAuthor ", authorEmail, postId);
-    const { data } = await axios.get(
-      `/api/users/articles?email=${authorEmail}&postId=${postId}`
-    );
-    console.log(data);
+    const { data } = await axios.get(`/api/users/articles?postId=${postId}`);
     return data;
   } catch (error) {
     console.error("Error while fetching categories:", error);
@@ -15,11 +11,11 @@ const getOnePostForAuthor = async (authorEmail, postId) => {
   }
 };
 
-export const useGetOnePostForAuthor = (authorEmail, postId) => {
+export const useGetOnePostForAuthor = (postId) => {
   return useQuery({
     queryKey: ["onePostAuthor"],
 
-    queryFn: () => getOnePostForAuthor(authorEmail, postId),
+    queryFn: () => getOnePostForAuthor(postId),
   });
 };
 
