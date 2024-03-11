@@ -71,8 +71,69 @@ const Profil = ({ image, name }) => {
 };
 
 const UserSocialMediaAccount = () => {
+  const [awaitBtnSave, setAwaitBtnSave] = useState(false);
+  const { mutate: saveNewSocialMedia } = useMutation(
+    (socialMedia) => axios.post("/api/users/socialmedia", socialMedia),
+    {
+      onSuccess: async (response) => {
+        setAwaitBtnSave(false);
+        toast.success(
+          "Vos informations sur les réseaux sociaux ont été mises à jour avec succès."
+        );
+      },
+      onError: (error) => {
+        setAwaitBtnSave(false);
+        toast.error(
+          "Échec de la modification de vos informations sur les réseaux sociaux. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+
+  const setDefaultAndCheckURL = (formData) => {
+    function isValidURL(url) {
+      const regex = /^(http|https):\/\/[^ "]+$/;
+      return regex.test(url);
+    }
+
+    const youtube = formData.get("youtube");
+    const facebook = formData.get("facebook");
+    const instagram = formData.get("instagram");
+    const linkedin = formData.get("linkedin");
+    const github = formData.get("github");
+
+    const validYoutube = youtube && isValidURL(youtube) ? youtube : "No link";
+    const validFacebook =
+      facebook && isValidURL(facebook) ? facebook : "No link";
+    const validInstagram =
+      instagram && isValidURL(instagram) ? instagram : "No link";
+    const validLinkedin =
+      linkedin && isValidURL(linkedin) ? linkedin : "No link";
+    const validGithub = github && isValidURL(github) ? github : "No link";
+
+    return {
+      youtube: validYoutube,
+      facebook: validFacebook,
+      instagram: validInstagram,
+      linkedin: validLinkedin,
+      github: validGithub,
+    };
+  };
+  const handleChangeSocialMediaUser = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const socialMediaWithDefault = setDefaultAndCheckURL(formData);
+
+    setAwaitBtnSave(true);
+    saveNewSocialMedia(socialMediaWithDefault);
+  };
   return (
-    <div className="user__account__social_media">
+    <form
+      className="user__account__social_media"
+      onSubmit={handleChangeSocialMediaUser}
+    >
       <span>MEDIA SOCIAUX</span>
       <ul>
         <li>
@@ -80,9 +141,10 @@ const UserSocialMediaAccount = () => {
             <AiOutlineYoutube />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"Aucun lien"}
+            name="youtube"
           />
         </li>
         <li>
@@ -90,9 +152,10 @@ const UserSocialMediaAccount = () => {
             <FaSquareFacebook />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"Aucun lien"}
+            name="facebook"
           />
         </li>
         <li>
@@ -100,9 +163,10 @@ const UserSocialMediaAccount = () => {
             <FaInstagram />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"Aucun lien"}
+            name="instagram"
           />
         </li>
         <li>
@@ -110,9 +174,10 @@ const UserSocialMediaAccount = () => {
             <AiOutlineLinkedin />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"Aucun lien"}
+            name="linkedin"
           />
         </li>
         <li>
@@ -120,14 +185,19 @@ const UserSocialMediaAccount = () => {
             <FaGithub />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"Aucun lien"}
+            name="github"
           />
         </li>
       </ul>
-      <ButtonSimple text={"Enregistrer"} isAwaiting={false} isEnable={true} />
-    </div>
+      <ButtonSimple
+        text={"Enregistrer"}
+        isAwaiting={awaitBtnSave}
+        isEnable={true}
+      />
+    </form>
   );
 };
 
