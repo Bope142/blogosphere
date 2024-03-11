@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import "../../public/style/main.scss";
 import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
@@ -10,6 +10,7 @@ import {
   ButtonSimple,
   ButtonSimpleLink,
 } from "@/components/buttons/Buttons";
+import { storage } from "@/lib/firebaseConfig";
 import { MemoForm } from "@/components/FormControll/FormControll";
 import { AiOutlineYoutube } from "react-icons/ai";
 import { FaSquareFacebook } from "react-icons/fa6";
@@ -19,13 +20,49 @@ import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { CardPostSimple } from "@/components/cards/Cards";
+import { useMutation, useQuery } from "react-query";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useGetPersonnalPost } from "@/hooks/useArticles";
+import { formatDateTime } from "@/utils/date";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+
+const isFirebaseStorageURL = (url) => {
+  const firebaseStorageRegex =
+    /^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/blogospher\.appspot\.com\/.+/;
+  return firebaseStorageRegex.test(url);
+};
+
+const deleteProfilPictureFromFirebase = async (fileUrl) => {
+  try {
+    const fileRef = ref(storage, fileUrl);
+    await deleteObject(fileRef);
+  } catch (error) {
+    console.error("Error deleting file: ", error);
+  }
+};
 const UserProfil = ({ image, name }) => {
-  if (image === null) {
+  if (!image) {
     return <p>{name.substring(0, 2).toUpperCase()}</p>;
-  } else {
+  } else if (typeof image === "string") {
     return (
       <Image
         src={image}
+        width={100}
+        height={100}
+        alt={"photo profile user " + name}
+      />
+    );
+  } else {
+    return (
+      <Image
+        src={URL.createObjectURL(image)}
         width={100}
         height={100}
         alt={"photo profile user " + name}
@@ -35,12 +72,95 @@ const UserProfil = ({ image, name }) => {
 };
 
 const Profil = ({ image, name }) => {
+  const [selectedImage, setSelectedImage] = useState(image);
+  const [awaitBtnSave, setAwaitBtnSave] = useState(false);
+  const [enableBtnSave, setEnableBtnSave] = useState(false);
+  const fileInputRef = useRef(null);
+  const [refFileUpload, setRefFileUpload] = useState(null);
+  const { mutate: updateProfilPicture } = useMutation(
+    (urlProfil) => axios.put("/api/users/profil", urlProfil),
+    {
+      onSuccess: async (response) => {
+        const urlOlderProfil = image;
+        setSelectedImage(response.data);
+        setAwaitBtnSave(false);
+        setEnableBtnSave(false);
+        toast.success("La photo de profil a été mise à jour avec succès !");
+
+        if (isFirebaseStorageURL(urlOlderProfil)) {
+          //delete old profil picture from Firebase
+          deleteProfilPictureFromFirebase(urlOlderProfil);
+        }
+      },
+      onError: async (error) => {
+        await deleteObject(refFileUpload);
+        setAwaitBtnSave(false);
+        setEnableBtnSave(false);
+        console.error(error);
+        toast.error(
+          "Échec de la modification de la photo de profil. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedImage(file);
+    setEnableBtnSave(true);
+  };
+
+  const handleUploadImage = async () => {
+    try {
+      if (selectedImage) {
+        setAwaitBtnSave(true);
+        const imageUrl = await uploadImage(selectedImage);
+        console.log("Image uploaded successfully. URL:", imageUrl);
+
+        //update url profil user in database
+        updateProfilPicture({
+          urlProfil: imageUrl,
+        });
+      } else {
+        setAwaitBtnSave(false);
+        setEnableBtnSave(false);
+        console.log("No image selected.");
+        toast.warn("Aucune photo séléctionnée !");
+      }
+    } catch (error) {
+      setAwaitBtnSave(false);
+      setEnableBtnSave(false);
+      console.error("Error uploading image: ", error);
+    }
+  };
+
+  const uploadImage = async (file) => {
+    try {
+      const storageRef = ref(storage, `profil/${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      setRefFileUpload(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading file: ", error);
+      setAwaitBtnSave(false);
+      setEnableBtnSave(false);
+      throw error;
+    }
+  };
   return (
     <div className="user__cover">
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleImageChange}
+        style={{ display: "none" }}
+      />
       <div className="cover__bg"></div>
       <div className="content">
         <div className="img-user">
-          <UserProfil image={image} name={name} />
+          <UserProfil image={selectedImage} name={name} />
         </div>
         <h2>{name}</h2>
         <div className="container__btn__action">
@@ -48,11 +168,13 @@ const Profil = ({ image, name }) => {
             text={"Changer la photo"}
             isAwaiting={false}
             isEnable={true}
+            eventHandler={() => fileInputRef.current.click()}
           />
           <ButtonSimple
             text={"Enregistrer"}
-            isAwaiting={false}
-            isEnable={true}
+            isAwaiting={awaitBtnSave}
+            isEnable={enableBtnSave}
+            eventHandler={handleUploadImage}
           />
           <ButtonSimpleLink
             text={"Pubiler un nouveau article"}
@@ -64,9 +186,110 @@ const Profil = ({ image, name }) => {
   );
 };
 
-const UserSocialMediaAccount = () => {
+const UserSocialMediaAccount = ({ socialMedia }) => {
+  const [youtube, setYoutube] = useState(
+    socialMedia !== undefined ? socialMedia[0].link : "No Link provided"
+  );
+  const [facebook, setFacebook] = useState(
+    socialMedia !== undefined ? socialMedia[1].link : "No Link provided"
+  );
+  const [instagram, setInstagram] = useState(
+    socialMedia !== undefined ? socialMedia[2].link : "No Link provided"
+  );
+  const [linkedin, setLinkedin] = useState(
+    socialMedia !== undefined ? socialMedia[4].link : "No Link provided"
+  );
+  const [github, setGithub] = useState(
+    socialMedia !== undefined ? socialMedia[3].link : "No Link provided"
+  );
+  const [awaitBtnSave, setAwaitBtnSave] = useState(false);
+  const { mutate: saveNewSocialMedia } = useMutation(
+    (socialMedia) => axios.post("/api/users/socialmedia", socialMedia),
+    {
+      onSuccess: async (response) => {
+        setAwaitBtnSave(false);
+        toast.success(
+          "Vos informations sur les réseaux sociaux ont été mises à jour avec succès."
+        );
+      },
+      onError: (error) => {
+        setAwaitBtnSave(false);
+        toast.error(
+          "Échec de la modification de vos informations sur les réseaux sociaux. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "youtube":
+        setYoutube(value);
+        break;
+      case "facebook":
+        setFacebook(value);
+        break;
+      case "instagram":
+        setInstagram(value);
+        break;
+      case "linkedin":
+        setLinkedin(value);
+        break;
+      case "github":
+        setGithub(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const setDefaultAndCheckURL = (formData) => {
+    function isValidURL(url) {
+      const regex = /^(http|https):\/\/[^ "]+$/;
+      return regex.test(url);
+    }
+
+    // const youtube = formData.get("youtube");
+    // const facebook = formData.get("facebook");
+    // const instagram = formData.get("instagram");
+    // const linkedin = formData.get("linkedin");
+    // const github = formData.get("github");
+
+    const validYoutube =
+      youtube && isValidURL(youtube) ? youtube : "No link provided";
+    const validFacebook =
+      facebook && isValidURL(facebook) ? facebook : "No link provided";
+    const validInstagram =
+      instagram && isValidURL(instagram) ? instagram : "No link provided";
+    const validLinkedin =
+      linkedin && isValidURL(linkedin) ? linkedin : "No link provided";
+    const validGithub =
+      github && isValidURL(github) ? github : "No link provided";
+
+    return {
+      youtube: validYoutube,
+      facebook: validFacebook,
+      instagram: validInstagram,
+      linkedin: validLinkedin,
+      github: validGithub,
+    };
+  };
+  const handleChangeSocialMediaUser = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const socialMediaWithDefault = setDefaultAndCheckURL(formData);
+
+    setAwaitBtnSave(true);
+    saveNewSocialMedia(socialMediaWithDefault);
+  };
   return (
-    <div className="user__account__social_media">
+    <form
+      className="user__account__social_media"
+      onSubmit={handleChangeSocialMediaUser}
+    >
       <span>MEDIA SOCIAUX</span>
       <ul>
         <li>
@@ -74,9 +297,12 @@ const UserSocialMediaAccount = () => {
             <AiOutlineYoutube />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"No link"}
+            name="youtube"
+            value={youtube}
+            onChange={handleChange}
           />
         </li>
         <li>
@@ -84,9 +310,12 @@ const UserSocialMediaAccount = () => {
             <FaSquareFacebook />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"No link"}
+            name="facebook"
+            value={facebook}
+            onChange={handleChange}
           />
         </li>
         <li>
@@ -94,9 +323,12 @@ const UserSocialMediaAccount = () => {
             <FaInstagram />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"No link"}
+            name="instagram"
+            value={instagram}
+            onChange={handleChange}
           />
         </li>
         <li>
@@ -104,9 +336,12 @@ const UserSocialMediaAccount = () => {
             <AiOutlineLinkedin />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"No link"}
+            name="linkedin"
+            value={linkedin}
+            onChange={handleChange}
           />
         </li>
         <li>
@@ -114,18 +349,53 @@ const UserSocialMediaAccount = () => {
             <FaGithub />
           </div>
           <input
-            type="link"
+            type="text"
             className="input__link"
-            value={"http://localhost:3000/authors/5"}
+            placeholder={"No link"}
+            name="github"
+            value={github}
+            onChange={handleChange}
           />
         </li>
       </ul>
-      <ButtonSimple text={"Enregistrer"} isAwaiting={false} isEnable={true} />
-    </div>
+      <ButtonSimple
+        text={"Enregistrer"}
+        isAwaiting={awaitBtnSave}
+        isEnable={true}
+      />
+    </form>
   );
 };
 
 const BioUserProfil = ({ overview }) => {
+  const [memoValue, setmemoValue] = useState("");
+  const [awaitBtnSave, setAwaitBtnSave] = useState(false);
+  const { mutate: updateOverview } = useMutation(
+    (newOverview) => axios.put("/api/users/overview", newOverview),
+    {
+      onSuccess: async (response) => {
+        setAwaitBtnSave(false);
+        setmemoValue(response.data.overview);
+      },
+      onError: (error) => {
+        setAwaitBtnSave(false);
+        console.error(error);
+        toast.error(
+          "Échec de la modification de la déscription de votre profil. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+  const handleChangeBioUser = () => {
+    if (memoValue === "") {
+      toast.warn("Veuillez remplir la description de votre profil.");
+    } else {
+      setAwaitBtnSave(true);
+      updateOverview({
+        overview: memoValue,
+      });
+    }
+  };
   return (
     <div className="container__bio">
       <MemoForm
@@ -133,146 +403,171 @@ const BioUserProfil = ({ overview }) => {
         labelText={"Votre Bio de profil"}
         name={"msg"}
         defaultValue={overview === null ? "Aucune description " : overview}
+        handleSetRemoteValue={setmemoValue}
       />
-      <ButtonSimple text={"Enregistrer"} isAwaiting={false} isEnable={true} />
+      <ButtonSimple
+        text={"Enregistrer"}
+        isAwaiting={awaitBtnSave}
+        isEnable={!awaitBtnSave}
+        eventHandler={handleChangeBioUser}
+      />
     </div>
   );
 };
 
-const MyProfil = ({ image, name, overview }) => {
+const MyProfil = ({ image, name, overview, socialMedia }) => {
   return (
     <section className="section_page profil__infos">
       <Profil name={name} image={image} />
       <BioUserProfil overview={overview} />
-      <UserSocialMediaAccount />
+      <UserSocialMediaAccount socialMedia={socialMedia} />
     </section>
   );
 };
 
-const SectionPostAuthor = () => {
-  const posts = [
-    {
-      category: "Technologie et Innovation",
-      title: "Les dernières avancées en intelligence artificielle",
-      cover: "/images/tech_cover.png",
-      duration: "5 min",
-      postLink: "/article1",
-      date: "2024-02-15",
-    },
-    {
-      category: "Voyage et Aventure",
-      title: "Explorer les merveilles cachées de l'Amérique du Sud",
-      cover: "/images/voyage.jpg",
-      duration: "7 min",
-      postLink: "/article2",
-      date: "2024-02-14",
-    },
-    {
-      category: "Cuisine et Gastronomie",
-      title:
-        "Recettes traditionnelles de cuisine française à essayer à la maison",
-      cover: "/images/Cuisine.jpg",
-      duration: "10 min",
-      postLink: "/article3",
-      date: "2024-02-13",
-    },
-    {
-      category: "Art et Culture",
-      title: "Analyse de l'impact de la Renaissance sur l'art moderne",
-      cover: "/images/Art.jpg",
-      duration: "6 min",
-      postLink: "/article4",
-      date: "2024-02-12",
-    },
-    {
-      category: "Santé et Bien-être",
-      title: "Les bienfaits du yoga pour la santé mentale et physique",
-      cover: "/images/Sante.jpg",
-      duration: "8 min",
-      postLink: "/article5",
-      date: "2024-02-11",
-    },
-    {
-      category: "Mode et Beauté",
-      title: "Les tendances de la mode printemps-été à adopter cette année",
-      cover: "/images/Mode.jpg",
-      duration: "9 min",
-      postLink: "/article6",
-      date: "2024-02-10",
-    },
-    {
-      category: "Finance et Investissement",
-      title: "Comment commencer à investir en bourse avec succès",
-      cover: "/images/Finance.jpg",
-      duration: "5 min",
-      postLink: "/article7",
-      date: "2024-02-09",
-    },
-    {
-      category: "Environnement et Durabilité",
-      title:
-        "Les initiatives pour sauver notre planète et lutter contre le changement climatique",
-      cover: "/images/Environnement.jpg",
-      duration: "7 min",
-      postLink: "/article8",
-      date: "2024-02-08",
-    },
-    {
-      category: "Parentalité et Éducation",
-      title: "Naviguer à travers les défis de la parentalité moderne",
-      cover: "/images/Education.jpg",
-      duration: "12 min",
-      postLink: "/article9",
-      date: "2024-02-07",
-    },
-    {
-      category: "Science et Nature",
-      title: "Les découvertes scientifiques les plus fascinantes de l'année",
-      cover: "/images/Science.jpg",
-      duration: "8 min",
-      postLink: "/article10",
-      date: "2024-02-06",
-    },
-    {
-      category: "Sports et Fitness",
-      title:
-        "Les meilleures techniques d'entraînement pour améliorer vos performances sportives",
-      cover: "/images/Sports.jpg",
-      duration: "6 min",
-      postLink: "/article11",
-      date: "2024-02-05",
-    },
-    {
-      category: "Actualités et Politique",
-      title:
-        "Analyse des enjeux politiques mondiaux et de leur impact sur la société",
-      cover: "/images/Politique.jpg",
-      duration: "7 min",
-      postLink: "/article12",
-      date: "2024-02-04",
-    },
-  ];
+// const SectionPostAuthor = () => {
+//   const [skipPage, setSkipPage] = useState(0);
+//   const [posts, setPosts] = useState([]);
+//   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+//   const { mutate, isLoading, isError } = useMutation(
+//     (skip) => axios.get(`/api/authors/posts/personnal?max=${1}&skip=${skip}`),
+//     {
+//       onSuccess: async (response) => {
+//         console.log(response);
+//         if (response.data) {
+//           // Filtrer les nouveaux articles pour éviter les doublons
+//           const newPosts = response.data.filter(
+//             (newPost) =>
+//               !posts.some(
+//                 (oldPost) => oldPost.article_id === newPost.article_id
+//               )
+//           );
+//           setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+//           setIsLoadingMore(false);
+//         }
+//       },
+//       onError: (error) => {
+//         setIsLoadingMore(false);
+//         console.error(error);
+//       },
+//     }
+//   );
+
+//   useEffect(() => {
+//     mutate(skipPage);
+//   }, [skipPage, mutate]);
+
+//   const handleNextPage = () => {
+//     setSkipPage((prevSkipPage) => prevSkipPage + 1);
+//     setIsLoadingMore(true);
+//   };
+
+//   console.log(posts);
+//   return (
+//     <section className="section_page content__post">
+//       <TitleSection
+//         title={"MES ARTICLES"}
+//         colorClass={"black"}
+//         overview={"dernières nouvelles sur la technologie"}
+//       />
+//       <div className="list__post">
+//         {isLoading ? (
+//           <p>Chargement...</p>
+//         ) : isError ? (
+//           <p>Une erreur s est produite lors du chargement des articles.</p>
+//         ) : posts.length > 0 ? (
+//           <>
+//             {posts.map((post) => (
+//               <CardPostSimple
+//                 key={post.article_id}
+//                 title={post.title}
+//                 category={post.categories.name_categorie}
+//                 cover={post.article_cover}
+//                 duration={post.read_time_minutes}
+//                 postLink={`/myprofil/articles/${post.article_id}`}
+//                 datePost={formatDateTime(post.date_created)}
+//                 isLoading={false}
+//               />
+//             ))}
+//           </>
+//         ) : (
+//           <p>Aucun post</p>
+//         )}
+//       </div>
+//       <ButtonSimple
+//         text={"Voir plus"}
+//         eventHandler={handleNextPage}
+//         isEnable={true}
+//         isAwaiting={isLoadingMore}
+//       />
+//     </section>
+//   );
+// };
+
+const SectionPostAuthor = ({ name }) => {
+  const [page, setPage] = useState(0);
+
+  const fetchPosts = async (page = 0) => {
+    const response = await axios.get(
+      `/api/authors/posts/personnal?max=${1}&skip=${page}`
+    );
+    return response.data;
+  };
+
+  const { isLoading, isError, error, data, isFetching, isPreviousData } =
+    useQuery(["projects", page], () => fetchPosts(page), {
+      keepPreviousData: true,
+    });
+
   return (
-    <section className="section_page content__post">
-      <TitleSection
-        title={"MES ARTICLES"}
-        colorClass={"black"}
-        overview={"dernières nouvelles sur la technologie"}
-      />
-      <div className="list__post">
-        {posts.map((post, index) => (
-          <CardPostSimple
-            key={index}
-            title={post.title}
-            category={post.category}
-            cover={post.cover}
-            duration={post.duration}
-            postLink={post.postLink}
-            datePost={post.date}
-          />
-        ))}
-      </div>
-    </section>
+    <div>
+      <section className="section_page content__post">
+        <TitleSection
+          title={"MES ARTICLES"}
+          colorClass={"black"}
+          overview={"Liste des articles publiés par " + name}
+        />
+        <div className="list__post">
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : isError ? (
+            <div>Error: {error.message}</div>
+          ) : (
+            <div>
+              {data.map((post) => (
+                <CardPostSimple
+                  key={post.article_id}
+                  title={post.title}
+                  category={post.categories.name_categorie}
+                  cover={post.article_cover}
+                  duration={post.read_time_minutes}
+                  postLink={`/myprofil/articles/${post.article_id}`}
+                  datePost={formatDateTime(post.date_created)}
+                  isLoading={false}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+      <span>Current Page: {page + 1}</span>
+      <button
+        onClick={() => setPage((old) => Math.max(old - 1, 0))}
+        disabled={page === 0}
+      >
+        Previous Page
+      </button>{" "}
+      <button
+        onClick={() => {
+          setPage((old) => old + 1);
+        }}
+        disabled={isPreviousData || !data?.hasMore}
+      >
+        Next Page
+      </button>
+      {isFetching ? <span> Loading...</span> : null}{" "}
+    </div>
   );
 };
 
@@ -286,12 +581,37 @@ function MyProfilPage() {
       </main>
     );
   } else if (status === "authenticated") {
-    const { image, name, overview } = session.user;
+    const { image, name, overview, socialmedia } = session.user;
     return (
-      <main className="page__content">
-        <MyProfil name={name} image={image} overview={overview} />
-        <SectionPostAuthor />
-      </main>
+      <Suspense
+        fallback={
+          <main className="page__content">
+            <LoaderPage />
+          </main>
+        }
+      >
+        <main className="page__content">
+          <MyProfil
+            name={name}
+            image={image}
+            overview={overview}
+            socialMedia={socialmedia.length === 0 ? undefined : socialmedia}
+          />
+          <SectionPostAuthor name={name} />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </main>
+      </Suspense>
     );
   } else {
     router.push("/login");

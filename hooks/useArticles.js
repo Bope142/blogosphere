@@ -54,3 +54,23 @@ export const useGetOnetPost = (postId) => {
     queryFn: () => getOnePost(postId),
   });
 };
+
+const getAuthorPostPersonnal = async (max, skip) => {
+  try {
+    const { data } = await axios.get(
+      `/api/authors/posts/personnal?max=${max}&skip=${skip}`
+    );
+    return data;
+  } catch (error) {
+    console.error("Error while fetching categories:", error);
+    throw error;
+  }
+};
+
+export const useGetPersonnalPost = (max, skip) => {
+  return useQuery({
+    queryKey: ["personnalPostAuthor"],
+
+    queryFn: () => getAuthorPostPersonnal(max, skip),
+  });
+};

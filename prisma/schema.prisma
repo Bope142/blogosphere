@@ -83,6 +83,17 @@ model users {
   follows_follows_follower_idTousers  follows[]       @relation("follows_follower_idTousers")
   follows_follows_following_idTousers follows[]       @relation("follows_following_idTousers")
   likes                               likes[]
+  socialmedia                         socialmedia[]
+}
+
+model socialmedia {
+  id          Int     @id @default(autoincrement())
+  user_id     Int?
+  social_name String? @db.Text
+  link        String? @db.Text
+  users       users?  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "socialmedia_ibfk_1")
+
+  @@index([user_id], map: "user_id")
 }
 
 enum users_role_user {
