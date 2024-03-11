@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import "../../public/style/main.scss";
 import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
@@ -19,10 +19,12 @@ import { FaGithub } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { CardPostSimple } from "@/components/cards/Cards";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useGetPersonnalPost } from "@/hooks/useArticles";
+import { formatDateTime } from "@/utils/date";
 const UserProfil = ({ image, name }) => {
   if (image === null) {
     return <p>{name.substring(0, 2).toUpperCase()}</p>;
@@ -187,130 +189,149 @@ const MyProfil = ({ image, name, overview }) => {
   );
 };
 
+// const SectionPostAuthor = () => {
+//   const [skipPage, setSkipPage] = useState(0);
+//   const [posts, setPosts] = useState([]);
+//   const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+//   const { mutate, isLoading, isError } = useMutation(
+//     (skip) => axios.get(`/api/authors/posts/personnal?max=${1}&skip=${skip}`),
+//     {
+//       onSuccess: async (response) => {
+//         console.log(response);
+//         if (response.data) {
+//           // Filtrer les nouveaux articles pour éviter les doublons
+//           const newPosts = response.data.filter(
+//             (newPost) =>
+//               !posts.some(
+//                 (oldPost) => oldPost.article_id === newPost.article_id
+//               )
+//           );
+//           setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+//           setIsLoadingMore(false);
+//         }
+//       },
+//       onError: (error) => {
+//         setIsLoadingMore(false);
+//         console.error(error);
+//       },
+//     }
+//   );
+
+//   useEffect(() => {
+//     mutate(skipPage);
+//   }, [skipPage, mutate]);
+
+//   const handleNextPage = () => {
+//     setSkipPage((prevSkipPage) => prevSkipPage + 1);
+//     setIsLoadingMore(true);
+//   };
+
+//   console.log(posts);
+//   return (
+//     <section className="section_page content__post">
+//       <TitleSection
+//         title={"MES ARTICLES"}
+//         colorClass={"black"}
+//         overview={"dernières nouvelles sur la technologie"}
+//       />
+//       <div className="list__post">
+//         {isLoading ? (
+//           <p>Chargement...</p>
+//         ) : isError ? (
+//           <p>Une erreur s est produite lors du chargement des articles.</p>
+//         ) : posts.length > 0 ? (
+//           <>
+//             {posts.map((post) => (
+//               <CardPostSimple
+//                 key={post.article_id}
+//                 title={post.title}
+//                 category={post.categories.name_categorie}
+//                 cover={post.article_cover}
+//                 duration={post.read_time_minutes}
+//                 postLink={`/myprofil/articles/${post.article_id}`}
+//                 datePost={formatDateTime(post.date_created)}
+//                 isLoading={false}
+//               />
+//             ))}
+//           </>
+//         ) : (
+//           <p>Aucun post</p>
+//         )}
+//       </div>
+//       <ButtonSimple
+//         text={"Voir plus"}
+//         eventHandler={handleNextPage}
+//         isEnable={true}
+//         isAwaiting={isLoadingMore}
+//       />
+//     </section>
+//   );
+// };
+
 const SectionPostAuthor = () => {
-  const posts = [
-    {
-      category: "Technologie et Innovation",
-      title: "Les dernières avancées en intelligence artificielle",
-      cover: "/images/tech_cover.png",
-      duration: "5 min",
-      postLink: "/article1",
-      date: "2024-02-15",
-    },
-    {
-      category: "Voyage et Aventure",
-      title: "Explorer les merveilles cachées de l'Amérique du Sud",
-      cover: "/images/voyage.jpg",
-      duration: "7 min",
-      postLink: "/article2",
-      date: "2024-02-14",
-    },
-    {
-      category: "Cuisine et Gastronomie",
-      title:
-        "Recettes traditionnelles de cuisine française à essayer à la maison",
-      cover: "/images/Cuisine.jpg",
-      duration: "10 min",
-      postLink: "/article3",
-      date: "2024-02-13",
-    },
-    {
-      category: "Art et Culture",
-      title: "Analyse de l'impact de la Renaissance sur l'art moderne",
-      cover: "/images/Art.jpg",
-      duration: "6 min",
-      postLink: "/article4",
-      date: "2024-02-12",
-    },
-    {
-      category: "Santé et Bien-être",
-      title: "Les bienfaits du yoga pour la santé mentale et physique",
-      cover: "/images/Sante.jpg",
-      duration: "8 min",
-      postLink: "/article5",
-      date: "2024-02-11",
-    },
-    {
-      category: "Mode et Beauté",
-      title: "Les tendances de la mode printemps-été à adopter cette année",
-      cover: "/images/Mode.jpg",
-      duration: "9 min",
-      postLink: "/article6",
-      date: "2024-02-10",
-    },
-    {
-      category: "Finance et Investissement",
-      title: "Comment commencer à investir en bourse avec succès",
-      cover: "/images/Finance.jpg",
-      duration: "5 min",
-      postLink: "/article7",
-      date: "2024-02-09",
-    },
-    {
-      category: "Environnement et Durabilité",
-      title:
-        "Les initiatives pour sauver notre planète et lutter contre le changement climatique",
-      cover: "/images/Environnement.jpg",
-      duration: "7 min",
-      postLink: "/article8",
-      date: "2024-02-08",
-    },
-    {
-      category: "Parentalité et Éducation",
-      title: "Naviguer à travers les défis de la parentalité moderne",
-      cover: "/images/Education.jpg",
-      duration: "12 min",
-      postLink: "/article9",
-      date: "2024-02-07",
-    },
-    {
-      category: "Science et Nature",
-      title: "Les découvertes scientifiques les plus fascinantes de l'année",
-      cover: "/images/Science.jpg",
-      duration: "8 min",
-      postLink: "/article10",
-      date: "2024-02-06",
-    },
-    {
-      category: "Sports et Fitness",
-      title:
-        "Les meilleures techniques d'entraînement pour améliorer vos performances sportives",
-      cover: "/images/Sports.jpg",
-      duration: "6 min",
-      postLink: "/article11",
-      date: "2024-02-05",
-    },
-    {
-      category: "Actualités et Politique",
-      title:
-        "Analyse des enjeux politiques mondiaux et de leur impact sur la société",
-      cover: "/images/Politique.jpg",
-      duration: "7 min",
-      postLink: "/article12",
-      date: "2024-02-04",
-    },
-  ];
+  const [page, setPage] = useState(0);
+
+  const fetchPosts = async (page = 0) => {
+    const response = await axios.get(
+      `/api/authors/posts/personnal?max=${1}&skip=${page}`
+    );
+    return response.data;
+  };
+
+  const { isLoading, isError, error, data, isFetching, isPreviousData } =
+    useQuery(["projects", page], () => fetchPosts(page), {
+      keepPreviousData: true,
+    });
+
   return (
-    <section className="section_page content__post">
-      <TitleSection
-        title={"MES ARTICLES"}
-        colorClass={"black"}
-        overview={"dernières nouvelles sur la technologie"}
-      />
-      <div className="list__post">
-        {posts.map((post, index) => (
-          <CardPostSimple
-            key={index}
-            title={post.title}
-            category={post.category}
-            cover={post.cover}
-            duration={post.duration}
-            postLink={post.postLink}
-            datePost={post.date}
-          />
-        ))}
-      </div>
-    </section>
+    <div>
+      <section className="section_page content__post">
+        <TitleSection
+          title={"MES ARTICLES"}
+          colorClass={"black"}
+          overview={"dernières nouvelles sur la technologie"}
+        />
+        <div className="list__post">
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : isError ? (
+            <div>Error: {error.message}</div>
+          ) : (
+            <div>
+              {data.map((post) => (
+                <CardPostSimple
+                  key={post.article_id}
+                  title={post.title}
+                  category={post.categories.name_categorie}
+                  cover={post.article_cover}
+                  duration={post.read_time_minutes}
+                  postLink={`/myprofil/articles/${post.article_id}`}
+                  datePost={formatDateTime(post.date_created)}
+                  isLoading={false}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+      <span>Current Page: {page + 1}</span>
+      <button
+        onClick={() => setPage((old) => Math.max(old - 1, 0))}
+        disabled={page === 0}
+      >
+        Previous Page
+      </button>{" "}
+      <button
+        onClick={() => {
+          setPage((old) => old + 1);
+        }}
+        disabled={isPreviousData || !data?.hasMore}
+      >
+        Next Page
+      </button>
+      {isFetching ? <span> Loading...</span> : null}{" "}
+    </div>
   );
 };
 
