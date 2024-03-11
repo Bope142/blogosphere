@@ -66,3 +66,14 @@ CREATE TABLE Follows (
     FOREIGN KEY (follower_id) REFERENCES Users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (following_id) REFERENCES Users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+-- Table des réseaux sociaux de l('utilisateur')
+CREATE TABLE SocialMedia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    social_name TEXT,
+    link TEXT,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
