@@ -142,3 +142,31 @@ export const getPostAuthorWithPagination = async (idAuthor, max, skip) => {
     await prisma.$disconnect();
   }
 };
+
+export const getAllPostFromCategory = async (idCategory) => {
+  try {
+    if (!idCategory) return null;
+    const post = await prisma.articles.findMany({
+      where: {
+        category_id: idCategory,
+      },
+      select: {
+        categories: true,
+        read_time_minutes: true,
+        content: true,
+        category_id: true,
+        date_created: true,
+        article_cover: true,
+        categories: true,
+        title: true,
+        article_id: true,
+      },
+    });
+    return post !== null ? post : null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
