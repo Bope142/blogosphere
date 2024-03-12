@@ -74,3 +74,21 @@ export const useGetPersonnalPost = (max, skip) => {
     queryFn: () => getAuthorPostPersonnal(max, skip),
   });
 };
+
+const getAllPostFromCategory = async (idCategory) => {
+  try {
+    const { data } = await axios.get(`/api/articles/categories/${idCategory}`);
+    return data;
+  } catch (error) {
+    console.error("Error while fetching categories:", error);
+    throw error;
+  }
+};
+
+export const useGetAllPostFromCategory = (idCategory) => {
+  return useQuery({
+    queryKey: ["postFromCategory"],
+
+    queryFn: () => getAllPostFromCategory(idCategory),
+  });
+};
