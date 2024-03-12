@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import { LoaderPage } from "@/components/loaders/Loaders";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -14,14 +14,32 @@ import {
 import { CardPostSimple } from "@/components/cards/Cards";
 import TitleSection from "@/components/titleSection/TitleSection";
 import Image from "next/image";
-import { ButtonSimple } from "@/components/buttons/Buttons";
+import { ButtonSimple, ButtonSubmitForm } from "@/components/buttons/Buttons";
 import { useGetOnePostForAuthor } from "@/hooks/useArticles";
 import { formatDateTime } from "@/utils/date";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import NotFound from "@/components/sectionNoFound/404";
 
 const SectionPost = ({ nameAuthor, imageAuthor, post, isLoading }) => {
+  const queryClient = useQueryClient();
+  const { mutate: likePost } = useMutation(
+    (newLike) => axios.post("/api/articles/likes", newLike),
+    {
+      onSuccess: async (response) => {
+        queryClient.invalidateQueries("onePostAuthor", post.article_id);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    }
+  );
+  const handleClickLike = (postId) => {
+    likePost({
+      article_id: postId,
+    });
+  };
+
   return isLoading ? (
     <CardPostDetails
       postCover={""}
@@ -49,17 +67,51 @@ const SectionPost = ({ nameAuthor, imageAuthor, post, isLoading }) => {
       postDuration={post.read_time_minutes}
       postDateTime={post.date_created}
       isLoading={isLoading}
+      likeEventHandler={() => handleClickLike(post.article_id)}
     />
   );
 };
 
-const SectionAddComment = ({ imageAuthor, isLoading }) => {
-  return isLoading ? (
-    <div className="add__comment loading-section-comment">
-      <div className="skeleton__loader"></div>
-    </div>
-  ) : (
-    <div className="add__comment">
+const SectionAddComment = ({ imageAuthor, postId }) => {
+  const [awaitBtnComment, setAwaitBtnComment] = useState(false);
+  const queryClient = useQueryClient();
+  const editorCommentRef = useRef(null);
+  const { mutate: addComment } = useMutation(
+    (newComment) => axios.post("/api/articles/comments", newComment),
+    {
+      onSuccess: async (response) => {
+        queryClient.invalidateQueries("onePostAuthor", postId);
+        setAwaitBtnComment(false);
+        toast.success(
+          "Félicitations ! Votre commentaire a été créé avec succès."
+        );
+        editorCommentRef.current.value = "";
+      },
+      onError: (error) => {
+        setAwaitBtnComment(false);
+        console.error(error);
+        toast.error(
+          "Échec de la création du commentaire. Veuillez réessayer ultérieurement."
+        );
+      },
+    }
+  );
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAwaitBtnComment(true);
+    let form = e.target;
+    let formData = new FormData(form);
+    let content = formData.get("content");
+    let article_id = postId;
+    let date_created = new Date();
+    addComment({
+      content,
+      article_id,
+      date_created,
+    });
+  };
+  return (
+    <form className="add__comment" onSubmit={handleSubmit}>
       <div className="profil__user">
         <Image
           src={imageAuthor}
@@ -69,29 +121,31 @@ const SectionAddComment = ({ imageAuthor, isLoading }) => {
         />
       </div>
       <textarea
-        name=""
-        id=""
+        name="content"
+        id="content"
         cols="30"
         rows="10"
         placeholder="Votre commentaire ici"
+        required
+        ref={editorCommentRef}
       ></textarea>
-      <button className="btn btn-submit-comment btn-link btn-clic-effect">
-        Commenter
-      </button>
-    </div>
+      {/* <ButtonSimple text={"Commenter"} isAwaiting={false} isEnable={true} /> */}
+      <ButtonSubmitForm text={"Commenter"} isAwaiting={awaitBtnComment} />
+    </form>
   );
 };
 
 const SectionContentComments = ({ comments }) => {
+  console.log(comments);
   return (
     <div className="container__list__comment__post">
-      {comments.map((comment, index) => (
+      {comments.map((comment) => (
         <CardComment
-          key={index}
-          username={"Nora Bope"}
+          key={comment.comment_id}
+          username={comment.users.username}
           date={formatDateTime(comment.date_created)}
           comments={comment.content}
-          profilUser={"/images/tech_cover.png"}
+          profilUser={comment.users.profile_picture}
         />
       ))}
     </div>
@@ -99,15 +153,16 @@ const SectionContentComments = ({ comments }) => {
 };
 
 const Container = ({ postId, imageAuthor, nameAuthor }) => {
+  const router = useRouter();
   const { data: post, isLoading } = useGetOnePostForAuthor(postId);
   const [awaitingBtnDelete, setAwaitingBtnDelete] = useState(false);
   const { mutate: deletePost } = useMutation(
     (id) => axios.delete(`/api/users/articles?postId=${id}`),
     {
       onSuccess: async (response) => {
-        console.log(response);
         setAwaitingBtnDelete(false);
         toast.success("Votre poste  a été supprimé avec succès.");
+        router.push("/myprofil");
       },
       onError: (error) => {
         setAwaitingBtnDelete(false);
@@ -151,7 +206,11 @@ const Container = ({ postId, imageAuthor, nameAuthor }) => {
           eventHandler={handleDeletePost}
         />
       </div>
-      <SectionAddComment imageAuthor={imageAuthor} isLoading={false} />
+      <SectionAddComment
+        imageAuthor={imageAuthor}
+        postId={post.article_id}
+        isLoading={false}
+      />
       <SectionContentComments comments={post.comments} />
       <ToastContainer
         position="bottom-right"

@@ -119,7 +119,6 @@ export const deleteOnePost = async (idPost, authorEmail) => {
 
 export const getPostAuthorWithPagination = async (idAuthor, max, skip) => {
   try {
-    console.log(skip);
     const posts = await prisma.articles.findMany({
       where: {
         user_id: idAuthor,
@@ -134,7 +133,6 @@ export const getPostAuthorWithPagination = async (idAuthor, max, skip) => {
         },
       },
     });
-    console.log(posts);
 
     return posts !== null ? posts : [];
   } catch (error) {

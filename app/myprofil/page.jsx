@@ -88,11 +88,11 @@ const Profil = ({ image, name }) => {
         toast.success("La photo de profil a été mise à jour avec succès !");
 
         if (isFirebaseStorageURL(urlOlderProfil)) {
-          //delete old profil picture from Firebase
           deleteProfilPictureFromFirebase(urlOlderProfil);
         }
       },
       onError: async (error) => {
+        setSelectedImage(image);
         await deleteObject(refFileUpload);
         setAwaitBtnSave(false);
         setEnableBtnSave(false);
@@ -115,16 +115,12 @@ const Profil = ({ image, name }) => {
       if (selectedImage) {
         setAwaitBtnSave(true);
         const imageUrl = await uploadImage(selectedImage);
-        console.log("Image uploaded successfully. URL:", imageUrl);
-
-        //update url profil user in database
         updateProfilPicture({
           urlProfil: imageUrl,
         });
       } else {
         setAwaitBtnSave(false);
         setEnableBtnSave(false);
-        console.log("No image selected.");
         toast.warn("Aucune photo séléctionnée !");
       }
     } catch (error) {
@@ -249,12 +245,6 @@ const UserSocialMediaAccount = ({ socialMedia }) => {
       const regex = /^(http|https):\/\/[^ "]+$/;
       return regex.test(url);
     }
-
-    // const youtube = formData.get("youtube");
-    // const facebook = formData.get("facebook");
-    // const instagram = formData.get("instagram");
-    // const linkedin = formData.get("linkedin");
-    // const github = formData.get("github");
 
     const validYoutube =
       youtube && isValidURL(youtube) ? youtube : "No link provided";
@@ -425,101 +415,42 @@ const MyProfil = ({ image, name, overview, socialMedia }) => {
   );
 };
 
-// const SectionPostAuthor = () => {
-//   const [skipPage, setSkipPage] = useState(0);
-//   const [posts, setPosts] = useState([]);
-//   const [isLoadingMore, setIsLoadingMore] = useState(false);
-
-//   const { mutate, isLoading, isError } = useMutation(
-//     (skip) => axios.get(`/api/authors/posts/personnal?max=${1}&skip=${skip}`),
-//     {
-//       onSuccess: async (response) => {
-//         console.log(response);
-//         if (response.data) {
-//           // Filtrer les nouveaux articles pour éviter les doublons
-//           const newPosts = response.data.filter(
-//             (newPost) =>
-//               !posts.some(
-//                 (oldPost) => oldPost.article_id === newPost.article_id
-//               )
-//           );
-//           setPosts((prevPosts) => [...prevPosts, ...newPosts]);
-//           setIsLoadingMore(false);
-//         }
-//       },
-//       onError: (error) => {
-//         setIsLoadingMore(false);
-//         console.error(error);
-//       },
-//     }
-//   );
-
-//   useEffect(() => {
-//     mutate(skipPage);
-//   }, [skipPage, mutate]);
-
-//   const handleNextPage = () => {
-//     setSkipPage((prevSkipPage) => prevSkipPage + 1);
-//     setIsLoadingMore(true);
-//   };
-
-//   console.log(posts);
-//   return (
-//     <section className="section_page content__post">
-//       <TitleSection
-//         title={"MES ARTICLES"}
-//         colorClass={"black"}
-//         overview={"dernières nouvelles sur la technologie"}
-//       />
-//       <div className="list__post">
-//         {isLoading ? (
-//           <p>Chargement...</p>
-//         ) : isError ? (
-//           <p>Une erreur s est produite lors du chargement des articles.</p>
-//         ) : posts.length > 0 ? (
-//           <>
-//             {posts.map((post) => (
-//               <CardPostSimple
-//                 key={post.article_id}
-//                 title={post.title}
-//                 category={post.categories.name_categorie}
-//                 cover={post.article_cover}
-//                 duration={post.read_time_minutes}
-//                 postLink={`/myprofil/articles/${post.article_id}`}
-//                 datePost={formatDateTime(post.date_created)}
-//                 isLoading={false}
-//               />
-//             ))}
-//           </>
-//         ) : (
-//           <p>Aucun post</p>
-//         )}
-//       </div>
-//       <ButtonSimple
-//         text={"Voir plus"}
-//         eventHandler={handleNextPage}
-//         isEnable={true}
-//         isAwaiting={isLoadingMore}
-//       />
-//     </section>
-//   );
-// };
-
 const SectionPostAuthor = ({ name }) => {
-  const [page, setPage] = useState(0);
+  const { data: firstPostAuthor, isLoading } = useGetPersonnalPost(5, 0);
+  const [firstLoading, setfirstLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [skipPage, setskipPage] = useState(5);
+  const [postAuthor, setPostAuthor] = useState([]);
+  const [isVisibleBtnMore, setisVisibleBtnMore] = useState(true);
 
-  const fetchPosts = async (page = 0) => {
-    const response = await axios.get(
-      `/api/authors/posts/personnal?max=${1}&skip=${page}`
-    );
-    return response.data;
+  if (firstPostAuthor && firstLoading) {
+    setPostAuthor((prevPosts) => [...prevPosts, ...firstPostAuthor]);
+    setfirstLoading(false);
+  }
+  const { mutate } = useMutation(
+    (skip) => axios.get(`/api/authors/posts/personnal?max=${5}&skip=${skip}`),
+    {
+      onSuccess: async (response) => {
+        if (response.data.length === 0) {
+          setisVisibleBtnMore(false);
+          toast.success("Tous vos articles sont chargés !");
+        } else {
+          setPostAuthor((prevPosts) => [...prevPosts, ...response.data]);
+          setIsLoadingMore(false);
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+        setIsLoadingMore(false);
+      },
+    }
+  );
+
+  const loadingNextDataPage = () => {
+    setskipPage((old) => old + 5);
+    setIsLoadingMore(true);
+    mutate(skipPage);
   };
-
-  const { isLoading, isError, error, data, isFetching, isPreviousData } =
-    useQuery(["projects", page], () => fetchPosts(page), {
-      keepPreviousData: true,
-    });
-
   return (
     <div>
       <section className="section_page content__post">
@@ -529,44 +460,28 @@ const SectionPostAuthor = ({ name }) => {
           overview={"Liste des articles publiés par " + name}
         />
         <div className="list__post">
-          {isLoading ? (
-            <div>Loading...</div>
-          ) : isError ? (
-            <div>Error: {error.message}</div>
-          ) : (
-            <div>
-              {data.map((post) => (
-                <CardPostSimple
-                  key={post.article_id}
-                  title={post.title}
-                  category={post.categories.name_categorie}
-                  cover={post.article_cover}
-                  duration={post.read_time_minutes}
-                  postLink={`/myprofil/articles/${post.article_id}`}
-                  datePost={formatDateTime(post.date_created)}
-                  isLoading={false}
-                />
-              ))}
-            </div>
-          )}
+          {postAuthor.map((post, index) => (
+            <CardPostSimple
+              key={post.article_id}
+              title={post.title}
+              category={post.categories.name_categorie}
+              cover={post.article_cover}
+              duration={post.read_time_minutes}
+              postLink={`/myprofil/articles/${post.article_id}`}
+              datePost={formatDateTime(post.date_created)}
+              isLoading={false}
+            />
+          ))}
         </div>
+        {isVisibleBtnMore && (
+          <ButtonSimple
+            text={"Voir plus"}
+            eventHandler={loadingNextDataPage}
+            isEnable={true}
+            isAwaiting={isLoadingMore}
+          />
+        )}
       </section>
-      <span>Current Page: {page + 1}</span>
-      <button
-        onClick={() => setPage((old) => Math.max(old - 1, 0))}
-        disabled={page === 0}
-      >
-        Previous Page
-      </button>{" "}
-      <button
-        onClick={() => {
-          setPage((old) => old + 1);
-        }}
-        disabled={isPreviousData || !data?.hasMore}
-      >
-        Next Page
-      </button>
-      {isFetching ? <span> Loading...</span> : null}{" "}
     </div>
   );
 };
