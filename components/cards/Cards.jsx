@@ -162,8 +162,13 @@ const CardProfilAuthor = ({
   profilLink,
   overview,
   profilCover,
+  isLoading,
 }) => {
-  return (
+  const display = isLoading ? (
+    <div className="card__auhtor__profil loading-profil-author">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <div className="card__auhtor__profil">
       <div className="card__header">
         <div className="profil">
@@ -182,6 +187,7 @@ const CardProfilAuthor = ({
       <p className="overview">{overview}</p>
     </div>
   );
+  return display;
 };
 
 const CardAuthor = ({ nameAuthor, overview, profilCover, articleCount }) => {

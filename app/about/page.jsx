@@ -1,11 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/jsx-no-comment-textnodes */
+"use client";
 import Image from "next/image";
 import "../../public/style/main.scss";
 import "./style.scss";
 import TitleSection from "@/components/titleSection/TitleSection";
 import { CardProfilAuthor } from "@/components/cards/Cards";
 import { ButtonSimpleLink } from "@/components/buttons/Buttons";
+import { useGetAuthor } from "@/hooks/useAuthor";
 const categories = [
   { title: "Technologie et Innovation", cover: "/images/tech_cover.png" },
   { title: "Voyage et Aventure", cover: "/images/voyage.jpg" },
@@ -43,6 +45,7 @@ const BannerAboutPage = () => {
 };
 
 const SectionAuthor = () => {
+  const { data, isLoading } = useGetAuthor(5);
   return (
     <section className="section_page list__author">
       <TitleSection
@@ -51,54 +54,31 @@ const SectionAuthor = () => {
         overview={"Les voix derrière nos pages"}
       />
       <div className="content__profil_author">
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
-        <CardProfilAuthor
-          profilCover={"/images/Cuisine.jpg"}
-          nameAuthor={"Norebrt Yemuang"}
-          overview={
-            "Environnementaliste dévoué, Alex met en lumière les problèmes écologiques urgents et les pratiques de développement durable. Ses articles incitent à l’action et offrent des idées pratiques pour un avenir plus vert."
-          }
-          profilLink={"/author"}
-        />
+        {isLoading
+          ? [...Array(8)].map((_, index) => (
+              <CardProfilAuthor
+                key={index}
+                profilCover={""}
+                nameAuthor={""}
+                overview={""}
+                profilLink={""}
+                isLoading={true}
+              />
+            ))
+          : data.map((author) => (
+              <CardProfilAuthor
+                key={author.user_id}
+                profilCover={author.profile_picture}
+                nameAuthor={author.username}
+                overview={
+                  author.overview === null
+                    ? "Aucune présentation 🫡"
+                    : author.overview
+                }
+                profilLink={"/authors/" + author.user_id}
+                isLoading={false}
+              />
+            ))}
       </div>
       <ButtonSimpleLink text={"Voir tous les auteurs"} path={"/authors"} />
     </section>

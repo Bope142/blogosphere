@@ -320,7 +320,7 @@ const SectionRandomPostThirthCategory = () => {
 };
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   if (status === "loading") {
     return (
       <main className="page__content" id="homePage">

@@ -455,6 +455,13 @@
   }
 }
 
+.loading-profil-author {
+  height: 250px !important;
+  padding: 10px !important;
+  & .skeleton__loader {
+    border-radius: 0.2rem !important;
+  }
+}
 .container__card__profil__author {
   display: flex;
   align-items: center;
