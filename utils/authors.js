@@ -28,3 +28,34 @@ export const getAuthors = async (max) => {
     await prisma.$disconnect();
   }
 };
+
+export const getProfilAuthor = async (idAuthor) => {
+  try {
+    if (!idAuthor) return null;
+    const profilAuthor = await prisma.users.findUnique({
+      where: {
+        user_id: idAuthor,
+      },
+      include: {
+        articles: {
+          select: {
+            article_id: true,
+            title: true,
+            content: true,
+            read_time_minutes: true,
+            date_created: true,
+            article_cover: true,
+            categories: true,
+          },
+        },
+        socialmedia: true,
+      },
+    });
+    return profilAuthor !== null ? profilAuthor : null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+};

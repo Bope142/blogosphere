@@ -190,8 +190,19 @@ const CardProfilAuthor = ({
   return display;
 };
 
-const CardAuthor = ({ nameAuthor, overview, profilCover, articleCount }) => {
-  return (
+const CardAuthor = ({
+  nameAuthor,
+  overview,
+  profilCover,
+  articleCount,
+  isLoading,
+  socialMedia,
+}) => {
+  const display = isLoading ? (
+    <div className="container__card__profil__author loading_container__card__profil__author">
+      <div className="skeleton__loader"></div>
+    </div>
+  ) : (
     <div className="container__card__profil__author">
       <div className="profil__cover">
         <Image
@@ -207,14 +218,34 @@ const CardAuthor = ({ nameAuthor, overview, profilCover, articleCount }) => {
         <div className="articles__count cat">{articleCount} Articles</div>
       </div>
       <div className="social__media">
-        <ButtonIcoLink path={""} Icons={<AiOutlineYoutube />} />
-        <ButtonIcoLink path={""} Icons={<FaSquareFacebook />} />
-        <ButtonIcoLink path={""} Icons={<FaInstagram />} />
-        <ButtonIcoLink path={""} Icons={<AiOutlineLinkedin />} />
-        <ButtonIcoLink path={""} Icons={<FaGithub />} />
+        {socialMedia[0].link !== "No link provided" && (
+          <ButtonIcoLink
+            path={socialMedia[0].link}
+            Icons={<AiOutlineYoutube />}
+          />
+        )}
+        {socialMedia[1].link !== "No link provided" && (
+          <ButtonIcoLink
+            path={socialMedia[1].link}
+            Icons={<FaSquareFacebook />}
+          />
+        )}
+        {socialMedia[2].link !== "No link provided" && (
+          <ButtonIcoLink path={socialMedia[2].link} Icons={<FaInstagram />} />
+        )}
+        {socialMedia[3].link !== "No link provided" && (
+          <ButtonIcoLink path={socialMedia[3].link} Icons={<FaGithub />} />
+        )}
+        {socialMedia[4].link !== "No link provided" && (
+          <ButtonIcoLink
+            path={socialMedia[4].link}
+            Icons={<AiOutlineLinkedin />}
+          />
+        )}
       </div>
     </div>
   );
+  return display;
 };
 
 const CardPostDetails = ({

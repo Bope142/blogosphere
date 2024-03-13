@@ -454,7 +454,15 @@
     line-height: 1.2rem;
   }
 }
-
+.loading_container__card__profil__author {
+  height: 250px;
+  padding: 10px;
+  background: white;
+  border-radius: 0.2rem !important;
+  & .skeleton__loader {
+    border-radius: 0.2rem !important;
+  }
+}
 .loading-profil-author {
   height: 250px !important;
   padding: 10px !important;

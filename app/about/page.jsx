@@ -8,6 +8,9 @@ import TitleSection from "@/components/titleSection/TitleSection";
 import { CardProfilAuthor } from "@/components/cards/Cards";
 import { ButtonSimpleLink } from "@/components/buttons/Buttons";
 import { useGetAuthor } from "@/hooks/useAuthor";
+import { LoaderPage } from "@/components/loaders/Loaders";
+import { useSession } from "next-auth/react";
+
 const categories = [
   { title: "Technologie et Innovation", cover: "/images/tech_cover.png" },
   { title: "Voyage et Aventure", cover: "/images/voyage.jpg" },
@@ -98,11 +101,20 @@ const SectionCategory = () => {
 };
 
 export default function AboutPage() {
-  return (
-    <main className="page__content">
-      <BannerAboutPage />
-      <SectionCategory />
-      <SectionAuthor />
-    </main>
-  );
+  const { status } = useSession();
+  if (status === "loading") {
+    return (
+      <main className="page__content" id="aboutPage">
+        <LoaderPage />
+      </main>
+    );
+  } else {
+    return (
+      <main className="page__content">
+        <BannerAboutPage />
+        <SectionCategory />
+        <SectionAuthor />
+      </main>
+    );
+  }
 }
