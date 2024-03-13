@@ -92,3 +92,23 @@ export const useGetAllPostFromCategory = (idCategory) => {
     queryFn: () => getAllPostFromCategory(idCategory),
   });
 };
+
+const getAllPost = async (max, skip) => {
+  try {
+    const { data } = await axios.get(
+      `/api/articles/all?max=${max}&skip=${skip}`
+    );
+    return data;
+  } catch (error) {
+    console.error("Error while fetching categories:", error);
+    throw error;
+  }
+};
+
+export const useGetAllPost = (max, skip) => {
+  return useQuery({
+    queryKey: ["allPost"],
+
+    queryFn: () => getAllPost(max, skip),
+  });
+};

@@ -170,3 +170,26 @@ export const getAllPostFromCategory = async (idCategory) => {
     await prisma.$disconnect();
   }
 };
+
+export const getAllPost = async (max, skip) => {
+  try {
+    const posts = await prisma.articles.findMany({
+      skip: skip,
+      take: max,
+      include: {
+        categories: {
+          select: {
+            name_categorie: true,
+          },
+        },
+      },
+    });
+
+    return posts !== null ? posts : [];
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+};
