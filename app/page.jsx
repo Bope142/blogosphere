@@ -99,9 +99,7 @@ const BestPostSection = () => {
 
 const SectionCategory = () => {
   const { data: categories, isLoading } = useGetCategories();
-  const display = isLoading ? (
-    "..."
-  ) : (
+  const display = !isLoading && (
     <div className="categories__post marquee">
       <div className="marquee-content">
         {categories.map((category, index) => (
@@ -111,15 +109,6 @@ const SectionCategory = () => {
     </div>
   );
 
-  // {categories.map((category, index) => (
-  //   <CardCategory
-  //     key={index}
-  //     title={category.name_categorie}
-  //     cover={category.coverPath}
-  //     id={category.category_id}
-  //     loading={false}
-  //   />
-  // ))}
   return display;
 };
 

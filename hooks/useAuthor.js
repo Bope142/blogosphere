@@ -36,3 +36,21 @@ export const useGetProfilAuthor = (idAuthor) => {
     queryFn: () => getAuthorProfil(idAuthor),
   });
 };
+
+const getAllProfilAuthor = async () => {
+  try {
+    const { data } = await axios.get(`/api/authors/profiles`);
+    return data;
+  } catch (error) {
+    console.error("Error while fetching authors list:", error);
+    throw error;
+  }
+};
+
+export const useGetAllProfilAuthor = () => {
+  return useQuery({
+    queryKey: ["allProfilAuthor"],
+
+    queryFn: getAllProfilAuthor,
+  });
+};

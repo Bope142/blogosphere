@@ -7,9 +7,9 @@ export const GET = async (req) => {
 
     const max = url.searchParams.get("max");
     if (max) {
-      const post = await getAuthors(parseInt(max));
+      const profilAuthor = await getAuthors(parseInt(max));
 
-      return NextResponse.json(post, {
+      return NextResponse.json(profilAuthor, {
         status: 200,
       });
     } else {

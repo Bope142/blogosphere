@@ -1,0 +1,48 @@
+@import "../../public/style/reset.scss";
+@import "../../public/style/variable.scss";
+
+.list__author {
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  & .content__profil_author {
+    display: grid;
+    grid-template-columns: repeat(3, 11fr);
+    gap: 25px;
+  }
+  & .btn {
+    align-self: center;
+  }
+}
+
+@media only screen and (max-width: 3000px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(4, 11fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 1320px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(3, 11fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 1130px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .list__author {
+    & .content__profil_author {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+}
